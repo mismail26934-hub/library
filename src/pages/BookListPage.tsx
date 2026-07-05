@@ -1,23 +1,29 @@
-import { useMemo, useState } from "react";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { setCategory, setRating, setSearch } from "@/store/uiSlice";
-import { useBooks, useCategories } from "@/features/books/useBooks";
+import { setCategory, setSearch } from "@/store/uiSlice";
+import { useBooks } from "@/features/books/useBooks";
 import { useDebounce } from "@/lib/useDebounce";
 import { BookCard } from "@/components/BookCard";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import { BookListFilters } from "@/components/BookListFilters";
+import { BookListMobileFilterBar } from "@/components/BookListMobileFilterBar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState, ErrorState } from "@/components/states";
 
 export function BookListPage() {
   const dispatch = useAppDispatch();
+  const [searchParams] = useSearchParams();
   const { search, category, rating } = useAppSelector((s) => s.ui);
   const [page, setPage] = useState(1);
   const debouncedSearch = useDebounce(search, 450);
 
-  const { data: categories } = useCategories();
+  useEffect(() => {
+    const q = searchParams.get("search");
+    if (q) dispatch(setSearch(q));
+    const cat = searchParams.get("category");
+    if (cat) dispatch(setCategory(Number(cat)));
+  }, [searchParams, dispatch]);
 
   const query = useMemo(
     () => ({
@@ -32,108 +38,74 @@ export function BookListPage() {
 
   const { data, isLoading, isError, refetch, isFetching } = useBooks(query);
 
-  const categoryOptions = [
-    { label: "All categories", value: "" },
-    ...(categories ?? []).map((c) => ({ label: c.name, value: String(c.id) })),
-  ];
-  const ratingOptions = [
-    { label: "All ratings", value: "" },
-    { label: "4+ stars", value: "4" },
-    { label: "3+ stars", value: "3" },
-    { label: "2+ stars", value: "2" },
-  ];
+  const resetPage = () => setPage(1);
+
+  const bookGrid = isLoading ? (
+    <div className="grid grid-cols-2 gap-4 lg:flex lg:flex-wrap lg:gap-5">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div key={i} className="lg:min-w-[180px] lg:flex-1">
+          <Skeleton className="aspect-[230/345] w-full rounded-xl" />
+          <Skeleton className="mt-2 h-4 w-3/4" />
+          <Skeleton className="mt-1 h-4 w-1/2" />
+        </div>
+      ))}
+    </div>
+  ) : isError ? (
+    <ErrorState onRetry={() => refetch()} />
+  ) : !data || data.books.length === 0 ? (
+    <EmptyState
+      title="No books found"
+      description="Try adjusting your search or filters."
+    />
+  ) : (
+    <>
+      <div className="grid grid-cols-2 gap-4 lg:flex lg:flex-wrap lg:gap-5">
+        {data.books.map((book) => (
+          <div
+            key={book.id}
+            className="min-w-0 lg:min-w-[180px] lg:max-w-[calc(25%-15px)] lg:flex-1"
+          >
+            <BookCard book={book} variant="desktop" />
+          </div>
+        ))}
+      </div>
+
+      <div className="flex items-center justify-center gap-4 pt-6">
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={page <= 1 || isFetching}
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+        >
+          Previous
+        </Button>
+        <span className="text-sm text-muted-foreground">
+          Page {data.pagination.page} of {data.pagination.totalPages}
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={page >= data.pagination.totalPages || isFetching}
+          onClick={() => setPage((p) => p + 1)}
+        >
+          Next
+        </Button>
+      </div>
+    </>
+  );
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Browse Books</h1>
-        <p className="text-muted-foreground">Find your next read from our collection</p>
+    <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-4 lg:gap-8">
+      <h1 className="text-2xl font-bold leading-9 text-[var(--color-ink)] lg:text-4xl lg:leading-[44px]">
+        Book List
+      </h1>
+
+      <BookListMobileFilterBar onChange={resetPage} />
+
+      <div className="flex gap-10">
+        <BookListFilters onChange={resetPage} />
+        <div className="min-w-0 flex-1">{bookGrid}</div>
       </div>
-
-      <div className="flex flex-col gap-3 rounded-[var(--radius)] border bg-card p-4 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search by title..."
-            value={search}
-            onChange={(e) => {
-              dispatch(setSearch(e.target.value));
-              setPage(1);
-            }}
-            className="pl-9"
-          />
-        </div>
-        <div className="flex items-center gap-3">
-          <SlidersHorizontal className="hidden h-4 w-4 text-muted-foreground sm:block" />
-          <Select
-            className="w-40"
-            value={category ? String(category) : ""}
-            options={categoryOptions}
-            onChange={(v) => {
-              dispatch(setCategory(v ? Number(v) : null));
-              setPage(1);
-            }}
-          />
-          <Select
-            className="w-36"
-            value={rating ? String(rating) : ""}
-            options={ratingOptions}
-            onChange={(v) => {
-              dispatch(setRating(v ? Number(v) : null));
-              setPage(1);
-            }}
-          />
-        </div>
-      </div>
-
-      {isLoading ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="space-y-2">
-              <Skeleton className="aspect-[3/4] w-full" />
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-            </div>
-          ))}
-        </div>
-      ) : isError ? (
-        <ErrorState onRetry={() => refetch()} />
-      ) : !data || data.books.length === 0 ? (
-        <EmptyState
-          title="No books found"
-          description="Try adjusting your search or filters."
-        />
-      ) : (
-        <>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {data.books.map((book) => (
-              <BookCard key={book.id} book={book} />
-            ))}
-          </div>
-
-          <div className="flex items-center justify-center gap-4 pt-4">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page <= 1 || isFetching}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-            >
-              Previous
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              Page {data.pagination.page} of {data.pagination.totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= data.pagination.totalPages || isFetching}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              Next
-            </Button>
-          </div>
-        </>
-      )}
     </div>
   );
 }

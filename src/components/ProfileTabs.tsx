@@ -16,26 +16,16 @@ const inactive = "font-medium text-[var(--color-ink-subtle)]";
 export function ProfileTabs() {
   return (
     <div className="flex h-14 w-full items-center gap-2 rounded-2xl bg-[#f5f5f5] p-2">
-      {tabs.map((tab) =>
-        tab.to ? (
-          <NavLink
-            key={tab.label}
-            to={tab.to}
-            end
-            className={({ isActive }) => cn(base, isActive ? active : inactive)}
-          >
-            {tab.label}
-          </NavLink>
-        ) : (
-          <span
-            key={tab.label}
-            aria-disabled="true"
-            className={cn(base, inactive, "cursor-not-allowed opacity-60")}
-          >
-            {tab.label}
-          </span>
-        ),
-      )}
+      {tabs.map((tab) => (
+        <NavLink
+          key={tab.label}
+          to={tab.to}
+          end
+          className={({ isActive }) => cn(base, isActive ? active : inactive)}
+        >
+          {tab.label}
+        </NavLink>
+      ))}
     </div>
   );
 }

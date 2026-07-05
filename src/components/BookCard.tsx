@@ -4,7 +4,50 @@ import { StarRating } from "./StarRating";
 import { Badge } from "@/components/ui/badge";
 import type { Book } from "@/types";
 
-export function BookCard({ book }: { book: Book }) {
+interface BookCardProps {
+  book: Book;
+  variant?: "default" | "desktop";
+}
+
+export function BookCard({ book, variant = "default" }: BookCardProps) {
+  if (variant === "desktop") {
+    return (
+      <Link
+        to={`/books/${book.id}`}
+        className="shadow-card group flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl bg-white transition-shadow hover:shadow-md"
+      >
+        <div className="aspect-[230/345] w-full overflow-hidden bg-muted">
+          {book.coverImage ? (
+            <img
+              src={book.coverImage}
+              alt={book.title}
+              loading="lazy"
+              className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          ) : (
+            <div className="flex size-full items-center justify-center text-sm text-muted-foreground">
+              No cover
+            </div>
+          )}
+        </div>
+        <div className="flex flex-col gap-1 p-4">
+          <h3 className="line-clamp-2 text-lg font-bold leading-8 tracking-[-0.54px] text-[var(--color-ink-strong)]">
+            {book.title}
+          </h3>
+          <p className="line-clamp-1 text-base font-medium tracking-[-0.48px] text-[var(--color-ink-muted)]">
+            {book.author?.name}
+          </p>
+          <div className="flex items-center gap-0.5">
+            <StarRating value={Math.round(book.rating)} size={24} />
+            <span className="text-base font-semibold tracking-[-0.32px] text-[var(--color-ink-strong)]">
+              {book.rating.toFixed(1)}
+            </span>
+          </div>
+        </div>
+      </Link>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
