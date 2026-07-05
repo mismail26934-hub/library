@@ -1,15 +1,15 @@
 import { useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { Check, Loader2, Trash2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Check, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import {
-  removeFromCart,
   toggleSelect,
   toggleSelectAll,
 } from '@/features/cart/cartSlice';
-import { useCheckout } from '@/features/cart/useCheckout';
+import { useCartQuery, useRemoveFromCart } from '@/features/cart/useCart';
 import { Button } from '@/components/ui/button';
-import { EmptyState } from '@/components/states';
+import { EmptyState, LoadingSpinner } from '@/components/states';
 import { cn } from '@/lib/utils';
 
 function Checkbox({
@@ -43,9 +43,11 @@ function Checkbox({
 export function CartPage() {
   const items = useAppSelector((s) => s.cart.items);
   const dispatch = useAppDispatch();
-  const checkout = useCheckout();
-
+  const navigate = useNavigate();
+  const token = useAppSelector((s) => s.auth.token);
   const selected = useAppSelector((s) => s.cart.selectedIds);
+  const { isLoading } = useCartQuery();
+  const removeFromCart = useRemoveFromCart();
 
   const allSelected = items.length > 0 && selected.length === items.length;
   const selectedItems = useMemo(
@@ -55,7 +57,23 @@ export function CartPage() {
 
   const toggleAll = () => dispatch(toggleSelectAll());
   const toggleItem = (id: number) => dispatch(toggleSelect(id));
-  const handleRemove = (id: number) => dispatch(removeFromCart(id));
+  const handleRemove = (id: number) => removeFromCart.mutate(id);
+
+  const handleBorrow = () => {
+    if (selectedItems.length === 0) return;
+    if (!token) {
+      toast.error('Please log in to borrow books');
+      navigate('/login', { state: { from: '/cart' } });
+      return;
+    }
+    navigate('/checkout', {
+      state: { bookIds: selectedItems.map((item) => item.book.id) },
+    });
+  };
+
+  if (token && isLoading) {
+    return <LoadingSpinner label="Loading cart..." />;
+  }
 
   if (items.length === 0) {
     return (
@@ -165,11 +183,10 @@ export function CartPage() {
           </div>
           <button
             type='button'
-            onClick={() => checkout.mutate(selectedItems)}
-            disabled={selectedItems.length === 0 || checkout.isPending}
+            onClick={handleBorrow}
+            disabled={selectedItems.length === 0}
             className='flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1c65da] text-base font-bold tracking-[-0.32px] text-white transition-colors hover:bg-[#1c65da]/90 disabled:opacity-60'
           >
-            {checkout.isPending && <Loader2 className='size-4 animate-spin' />}
             Borrow Book
           </button>
         </aside>
@@ -189,11 +206,9 @@ export function CartPage() {
           </div>
           <button
             type='button'
-            onClick={() => checkout.mutate(selectedItems)}
-            disabled={checkout.isPending}
+            onClick={handleBorrow}
             className='flex h-10 w-[150px] items-center justify-center gap-2 rounded-full bg-[#1c65da] text-sm font-bold tracking-[-0.28px] text-white transition-colors hover:bg-[#1c65da]/90 disabled:opacity-60'
           >
-            {checkout.isPending && <Loader2 className='size-4 animate-spin' />}
             Borrow Book
           </button>
         </div>

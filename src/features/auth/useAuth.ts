@@ -1,19 +1,22 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { authApi, type LoginPayload, type RegisterPayload } from "@/lib/api-endpoints";
 import { getApiErrorMessage } from "@/lib/axios";
+import { qk } from "@/lib/query-keys";
 import { useAppDispatch } from "@/app/hooks";
 import { setCredentials } from "./authSlice";
 
 export function useLogin() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const qc = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: LoginPayload) => authApi.login(payload),
     onSuccess: (data) => {
       dispatch(setCredentials({ token: data.token, user: data.user }));
+      qc.invalidateQueries({ queryKey: qk.cart() });
       toast.success(`Welcome back, ${data.user.name}!`);
       navigate(data.user.role === "ADMIN" ? "/admin" : "/");
     },

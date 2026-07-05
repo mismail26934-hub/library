@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, ExternalLink, LogOut } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { logout } from "@/features/auth/authSlice";
+import { qk } from "@/lib/query-keys";
 import { Avatar } from "@/components/ui/avatar";
 import { cn, getInitials } from "@/lib/utils";
 import { AdminTabs } from "./AdminTabs";
@@ -11,6 +13,7 @@ function AdminHeader() {
   const { user } = useAppSelector((s) => s.auth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -24,6 +27,7 @@ function AdminHeader() {
 
   const handleLogout = () => {
     dispatch(logout());
+    qc.removeQueries({ queryKey: qk.cart() });
     navigate("/login");
   };
 

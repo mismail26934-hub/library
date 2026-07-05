@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, Menu, Search, X } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { logout } from "@/features/auth/authSlice";
+import { qk } from "@/lib/query-keys";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { cn, getInitials } from "@/lib/utils";
@@ -12,6 +14,7 @@ export function Navbar() {
   const cartCount = useAppSelector((s) => s.cart.items.length);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const qc = useQueryClient();
 
   const [search, setSearch] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -39,6 +42,7 @@ export function Navbar() {
 
   const handleLogout = () => {
     dispatch(logout());
+    qc.removeQueries({ queryKey: qk.cart() });
     setMenuOpen(false);
     navigate("/login");
   };

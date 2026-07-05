@@ -9,6 +9,7 @@ export const qk = {
   reviews: (bookId: number | string) => ["reviews", String(bookId)] as const,
   myLoans: (params: MyLoansQuery) => ["my-loans", params] as const,
   profile: () => ["profile"] as const,
+  cart: () => ["cart"] as const,
   myReviews: () => ["my-reviews"] as const,
   adminUsers: (params: AdminListQuery) => ["admin", "users", params] as const,
   adminLoans: (params: AdminListQuery) => ["admin", "loans", params] as const,

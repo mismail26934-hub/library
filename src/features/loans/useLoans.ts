@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { loansApi, type BorrowPayload, type MyLoansQuery } from "@/lib/api-endpoints";
 import { getApiErrorMessage } from "@/lib/axios";
 import { qk } from "@/lib/query-keys";
+import { useAppSelector } from "@/app/hooks";
 import type { BookDetail } from "@/types";
 
 export function useMyLoans(params: MyLoansQuery) {
@@ -10,6 +11,29 @@ export function useMyLoans(params: MyLoansQuery) {
     queryKey: qk.myLoans(params),
     queryFn: () => loansApi.my(params),
   });
+}
+
+export function useActiveLoans() {
+  const token = useAppSelector((s) => s.auth.token);
+
+  return useQuery({
+    queryKey: qk.myLoans({ status: "active", page: 1, limit: 50 }),
+    queryFn: () => loansApi.my({ status: "active", page: 1, limit: 50 }),
+    enabled: !!token,
+  });
+}
+
+export function useIsBookBorrowed(bookId: number) {
+  const token = useAppSelector((s) => s.auth.token);
+  const { data, isLoading } = useActiveLoans();
+  const isBorrowed =
+    !!token &&
+    (data?.loans.some(
+      (loan) => loan.book.id === bookId && loan.status !== "RETURNED",
+    ) ??
+      false);
+
+  return { isBorrowed, isLoading: !!token && isLoading };
 }
 
 /**

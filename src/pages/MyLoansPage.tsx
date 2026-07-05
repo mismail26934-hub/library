@@ -12,11 +12,11 @@ import { formatDate, isOverdue } from "@/lib/utils";
 import type { Loan } from "@/types";
 
 const tabs = [
-  { value: "All", label: "All" },
-  { value: "Active", label: "Active" },
-  { value: "Returned", label: "Returned" },
-  { value: "Overdue", label: "Overdue" },
-];
+  { value: "all", label: "All" },
+  { value: "active", label: "Active" },
+  { value: "returned", label: "Returned" },
+  { value: "overdue", label: "Overdue" },
+] as const;
 
 function statusBadge(loan: Loan) {
   if (loan.status === "RETURNED")
@@ -27,9 +27,9 @@ function statusBadge(loan: Loan) {
 }
 
 export function MyLoansPage() {
-  const [tab, setTab] = useState("All");
+  const [tab, setTab] = useState<(typeof tabs)[number]["value"]>("all");
   const { data, isLoading, isError, refetch } = useMyLoans({
-    status: tab === "All" ? undefined : tab,
+    status: tab === "all" ? undefined : tab,
     page: 1,
     limit: 50,
   });
@@ -42,7 +42,7 @@ export function MyLoansPage() {
         <p className="text-muted-foreground">Track your borrowed books and due dates</p>
       </div>
 
-      <Tabs value={tab} onValueChange={setTab}>
+      <Tabs value={tab} onValueChange={(v) => setTab(v as (typeof tabs)[number]["value"])}>
         <TabsList>
           {tabs.map((t) => (
             <TabsTrigger key={t.value} value={t.value}>

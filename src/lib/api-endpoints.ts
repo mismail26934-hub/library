@@ -80,7 +80,7 @@ export interface BorrowPayload {
   days: number;
 }
 export interface MyLoansQuery {
-  status?: string;
+  status?: "all" | "active" | "returned" | "overdue";
   page?: number;
   limit?: number;
 }

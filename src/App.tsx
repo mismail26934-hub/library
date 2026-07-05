@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { CartSync } from "@/features/cart/useCart";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { HomePage } from "@/pages/HomePage";
 import { LoginPage } from "@/pages/LoginPage";
@@ -11,6 +12,7 @@ import { MyLoansPage } from "@/pages/MyLoansPage";
 import { MyReviewsPage } from "@/pages/MyReviewsPage";
 import { ProfilePage } from "@/pages/ProfilePage";
 import { CartPage } from "@/pages/CartPage";
+import { CheckoutPage } from "@/pages/CheckoutPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { AdminUsersPage } from "@/pages/admin/AdminUsersPage";
 import { AdminBooksPage } from "@/pages/admin/AdminBooksPage";
@@ -19,7 +21,9 @@ import { AdminBorrowedListPage } from "@/pages/admin/AdminBorrowedListPage";
 
 export default function App() {
   return (
-    <Routes>
+    <>
+      <CartSync />
+      <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
@@ -42,6 +46,7 @@ export default function App() {
         <Route path="/cart" element={<CartPage />} />
 
         <Route element={<ProtectedRoute />}>
+          <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/loans" element={<MyLoansPage />} />
           <Route path="/reviews" element={<MyReviewsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
@@ -50,5 +55,6 @@ export default function App() {
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
+    </>
   );
 }
