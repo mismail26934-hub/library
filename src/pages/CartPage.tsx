@@ -1,33 +1,73 @@
-import { Link } from "react-router-dom";
-import { Trash2 } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { clearCart, removeFromCart, setItemDays } from "@/features/cart/cartSlice";
-import { useCheckout } from "@/features/cart/useCheckout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Select } from "@/components/ui/select";
-import { EmptyState } from "@/components/states";
+import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { Check, Loader2, Trash2 } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import {
+  removeFromCart,
+  toggleSelect,
+  toggleSelectAll,
+} from '@/features/cart/cartSlice';
+import { useCheckout } from '@/features/cart/useCheckout';
+import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/states';
+import { cn } from '@/lib/utils';
 
-const durationOptions = [
-  { label: "3 days", value: "3" },
-  { label: "5 days", value: "5" },
-  { label: "10 days", value: "10" },
-];
+function Checkbox({
+  checked,
+  onClick,
+  className,
+}: {
+  checked: boolean;
+  onClick: () => void;
+  className?: string;
+}) {
+  return (
+    <button
+      type='button'
+      role='checkbox'
+      aria-checked={checked}
+      onClick={onClick}
+      className={cn(
+        'flex size-5 shrink-0 items-center justify-center rounded-[6px] border transition-colors',
+        checked
+          ? 'border-transparent bg-[#1c65da] text-white'
+          : 'border-[#a4a7ae] bg-white hover:border-[#1c65da]',
+        className
+      )}
+    >
+      {checked && <Check className='size-3.5' strokeWidth={3} />}
+    </button>
+  );
+}
 
 export function CartPage() {
   const items = useAppSelector((s) => s.cart.items);
   const dispatch = useAppDispatch();
   const checkout = useCheckout();
 
+  const selected = useAppSelector((s) => s.cart.selectedIds);
+
+  const allSelected = items.length > 0 && selected.length === items.length;
+  const selectedItems = useMemo(
+    () => items.filter((i) => selected.includes(i.book.id)),
+    [items, selected]
+  );
+
+  const toggleAll = () => dispatch(toggleSelectAll());
+  const toggleItem = (id: number) => dispatch(toggleSelect(id));
+  const handleRemove = (id: number) => dispatch(removeFromCart(id));
+
   if (items.length === 0) {
     return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold">My Cart</h1>
+      <div className='mx-auto w-full max-w-[1000px] space-y-8'>
+        <h1 className='text-[28px] font-bold leading-9 text-[var(--color-ink)] md:text-4xl md:leading-[44px]'>
+          My Cart
+        </h1>
         <EmptyState
-          title="Your cart is empty"
-          description="Add books to your cart to borrow them together."
+          title='Your cart is empty'
+          description='Add books to your cart to borrow them together.'
           action={
-            <Link to="/books">
+            <Link to='/books'>
               <Button>Browse books</Button>
             </Link>
           }
@@ -37,75 +77,97 @@ export function CartPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">My Cart ({items.length})</h1>
-        <Button variant="ghost" size="sm" onClick={() => dispatch(clearCart())}>
-          Clear cart
-        </Button>
-      </div>
+    <div className='mx-auto flex w-full max-w-[1000px] flex-col gap-6 md:gap-8'>
+      <h1 className='text-[28px] font-bold leading-9 text-[var(--color-ink)] md:text-4xl md:leading-[44px]'>
+        My Cart
+      </h1>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        <div className="space-y-3">
-          {items.map((item) => (
-            <Card key={item.book.id}>
-              <CardContent className="flex items-center gap-4 p-4">
-                <Link to={`/books/${item.book.id}`} className="shrink-0">
-                  {item.book.coverImage ? (
-                    <img
-                      src={item.book.coverImage}
-                      alt={item.book.title}
-                      className="h-20 w-14 rounded-md object-cover"
-                    />
-                  ) : (
-                    <div className="h-20 w-14 rounded-md bg-muted" />
-                  )}
-                </Link>
-                <div className="flex-1">
-                  <Link
-                    to={`/books/${item.book.id}`}
-                    className="font-semibold hover:underline"
-                  >
-                    {item.book.title}
-                  </Link>
-                  <p className="text-sm text-muted-foreground">{item.book.author?.name}</p>
-                </div>
-                <Select
-                  className="w-28"
-                  value={String(item.days)}
-                  options={durationOptions}
-                  onChange={(v) =>
-                    dispatch(setItemDays({ bookId: item.book.id, days: Number(v) }))
-                  }
+      <div className='flex flex-col gap-8 lg:flex-row lg:items-start'>
+        {/* List */}
+        <div className='flex flex-1 flex-col gap-6'>
+          <label className='flex w-fit cursor-pointer items-center gap-4'>
+            <Checkbox checked={allSelected} onClick={toggleAll} />
+            <span className='text-base font-semibold tracking-[-0.32px] text-[var(--color-ink)]'>
+              Select All
+            </span>
+          </label>
+
+          {items.map((item, idx) => (
+            <div key={item.book.id} className='flex flex-col gap-6'>
+              <div className='flex items-start gap-4'>
+                <Checkbox
+                  checked={selected.includes(item.book.id)}
+                  onClick={() => toggleItem(item.book.id)}
                 />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => dispatch(removeFromCart(item.book.id))}
+
+                <div className='flex flex-1 items-center gap-4'>
+                  <Link to={`/books/${item.book.id}`} className='shrink-0'>
+                    {item.book.coverImage ? (
+                      <img
+                        src={item.book.coverImage}
+                        alt={item.book.title}
+                        className='h-[138px] w-[92px] rounded-[6px] object-cover'
+                      />
+                    ) : (
+                      <div className='h-[138px] w-[92px] rounded-[6px] bg-muted' />
+                    )}
+                  </Link>
+
+                  <div className='flex min-w-0 flex-col gap-1'>
+                    <span className='w-fit rounded-[6px] border border-[#d5d7da] px-2 text-sm font-bold tracking-[-0.28px] text-[var(--color-ink)]'>
+                      {item.book.category?.name ?? 'General'}
+                    </span>
+                    <Link
+                      to={`/books/${item.book.id}`}
+                      className='truncate text-lg font-bold tracking-[-0.54px] text-[var(--color-ink)] hover:underline'
+                    >
+                      {item.book.title}
+                    </Link>
+                    <p className='truncate text-base font-medium tracking-[-0.48px] text-[var(--color-ink-muted)]'>
+                      {item.book.author?.name}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type='button'
+                  onClick={() => handleRemove(item.book.id)}
+                  aria-label='Remove from cart'
+                  className='shrink-0 self-center rounded-md p-2 text-[var(--color-ink-subtle)] transition-colors hover:bg-secondary hover:text-destructive'
                 >
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-              </CardContent>
-            </Card>
+                  <Trash2 className='size-5' />
+                </button>
+              </div>
+
+              {idx < items.length - 1 && (
+                <hr className='border-t border-[#d5d7da]' />
+              )}
+            </div>
           ))}
         </div>
 
-        <Card className="h-fit">
-          <CardContent className="space-y-4 pt-6">
-            <h2 className="font-semibold">Summary</h2>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Total books</span>
-              <span className="font-medium">{items.length}</span>
-            </div>
-            <Button
-              className="w-full"
-              loading={checkout.isPending}
-              onClick={() => checkout.mutate(items)}
-            >
-              Confirm & Borrow
-            </Button>
-          </CardContent>
-        </Card>
+        {/* Loan Summary */}
+        <aside className='shadow-card flex w-full flex-col gap-6 rounded-2xl bg-white p-5 lg:sticky lg:top-24 lg:w-[318px] lg:shrink-0'>
+          <h2 className='text-xl font-bold tracking-[-0.4px] text-[var(--color-ink)]'>
+            Loan Summary
+          </h2>
+          <div className='flex items-center justify-between text-base text-[var(--color-ink)]'>
+            <span className='font-medium tracking-[-0.48px]'>Total Book</span>
+            <span className='font-bold tracking-[-0.32px]'>
+              {selectedItems.length}{' '}
+              {selectedItems.length === 1 ? 'Item' : 'Items'}
+            </span>
+          </div>
+          <button
+            type='button'
+            onClick={() => checkout.mutate(selectedItems)}
+            disabled={selectedItems.length === 0 || checkout.isPending}
+            className='flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1c65da] text-base font-bold tracking-[-0.32px] text-white transition-colors hover:bg-[#1c65da]/90 disabled:opacity-60'
+          >
+            {checkout.isPending && <Loader2 className='size-4 animate-spin' />}
+            Borrow Book
+          </button>
+        </aside>
       </div>
     </div>
   );
