@@ -21,9 +21,9 @@ const FILTERS = [
 
 const STATUS_PARAM: Record<string, string | undefined> = {
   all: undefined,
-  active: "BORROWED",
-  returned: "RETURNED",
-  overdue: "OVERDUE",
+  active: "active",
+  returned: "returned",
+  overdue: "overdue",
 };
 
 export function AdminBorrowedListPage() {
@@ -89,7 +89,7 @@ export function AdminBorrowedListPage() {
 }
 
 function BorrowedCard({ loan }: { loan: AdminLoan }) {
-  const { book, user } = loan;
+  const { book, borrower } = loan;
   return (
     <div className="shadow-card flex flex-col gap-5 rounded-2xl bg-white p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -136,7 +136,7 @@ function BorrowedCard({ loan }: { loan: AdminLoan }) {
             borrower&apos;s name
           </p>
           <p className="text-xl font-bold tracking-[-0.4px] text-[var(--color-ink)]">
-            {user?.name ?? "-"}
+            {borrower?.name ?? "-"}
           </p>
         </div>
       </div>

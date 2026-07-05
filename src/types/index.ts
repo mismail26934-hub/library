@@ -148,7 +148,7 @@ export interface UsersResponse {
 
 /** A loan record as returned by the admin endpoints — includes the borrower. */
 export interface AdminLoan extends Loan {
-  user: Pick<User, "id" | "name" | "email">;
+  borrower: Pick<User, "id" | "name" | "email">;
 }
 
 export interface AdminLoansResponse {
