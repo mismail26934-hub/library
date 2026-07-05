@@ -43,7 +43,7 @@ export const authApi = {
 export interface BooksQuery {
   page?: number;
   limit?: number;
-  search?: string;
+  q?: string;
   category?: number | string;
   rating?: number;
 }
@@ -143,7 +143,7 @@ export const meApi = {
 export interface AdminListQuery {
   page?: number;
   limit?: number;
-  search?: string;
+  q?: string;
   status?: string;
 }
 

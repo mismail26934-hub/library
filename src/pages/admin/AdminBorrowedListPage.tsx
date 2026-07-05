@@ -36,7 +36,7 @@ export function AdminBorrowedListPage() {
     () => ({
       page,
       limit: LIMIT,
-      search: debounced || undefined,
+      q: debounced || undefined,
       status: STATUS_PARAM[filter],
     }),
     [page, debounced, filter],

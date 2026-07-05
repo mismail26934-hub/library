@@ -29,7 +29,7 @@ export function BookListPage() {
     () => ({
       page,
       limit: 12,
-      search: debouncedSearch || undefined,
+      q: debouncedSearch || undefined,
       category: category ?? undefined,
       rating: rating ?? undefined,
     }),

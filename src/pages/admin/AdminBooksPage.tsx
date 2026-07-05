@@ -44,7 +44,7 @@ export function AdminBooksPage() {
   const debounced = useDebounce(search, 450);
 
   const query = useMemo(
-    () => ({ page, limit: LIMIT, search: debounced || undefined }),
+    () => ({ page, limit: LIMIT, q: debounced || undefined }),
     [page, debounced],
   );
 
