@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Star, Trash2 } from "lucide-react";
 import { useAppSelector } from "@/app/hooks";
-import { useDeleteReview } from "./useReviews";
+import { enrichReviewsWithProfilePhotos, normalizeReviews } from "./reviewUser";
+import { useBookReviews, useDeleteReview, useReviewerPhotos } from "./useReviews";
+import { useProfile } from "@/features/profile/useProfile";
 import { StarRating } from "@/components/StarRating";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
@@ -52,6 +54,7 @@ function ReviewCard({
         <div className="flex items-center gap-3 lg:items-start">
           <Avatar
             className="size-[58px] shrink-0 text-sm lg:size-16 lg:text-lg"
+            src={review.user?.profilePhoto}
             fallback={getInitials(review.user?.name)}
           />
           <div>
@@ -85,11 +88,41 @@ function ReviewCard({
   );
 }
 
-export function ReviewSection({ bookId, reviews, rating, reviewCount }: ReviewSectionProps) {
-  const user = useAppSelector((s) => s.auth.user);
+export function ReviewSection({
+  bookId,
+  reviews: initialReviews,
+  rating,
+  reviewCount,
+}: ReviewSectionProps) {
+  const authUser = useAppSelector((s) => s.auth.user);
+  const token = useAppSelector((s) => s.auth.token);
   const deleteReview = useDeleteReview(bookId);
+  const { data: reviewsData } = useBookReviews(bookId);
+  const { data: profileData } = useProfile(!!token);
   const isDesktop = useIsDesktop();
   const pageSize = isDesktop ? PAGE_SIZE_DESKTOP : PAGE_SIZE_MOBILE;
+
+  const currentUser = profileData?.profile ?? authUser;
+
+  const baseReviews = useMemo(
+    () => normalizeReviews(reviewsData?.reviews ?? initialReviews),
+    [reviewsData?.reviews, initialReviews],
+  );
+
+  const reviewersMissingPhoto = useMemo(
+    () =>
+      baseReviews
+        .filter((review) => !review.user.profilePhoto)
+        .map((review) => ({ userId: review.userId, name: review.user.name })),
+    [baseReviews],
+  );
+
+  const { data: reviewerPhotos } = useReviewerPhotos(reviewersMissingPhoto);
+
+  const reviews = useMemo(
+    () => enrichReviewsWithProfilePhotos(baseReviews, currentUser, reviewerPhotos),
+    [baseReviews, currentUser, reviewerPhotos],
+  );
 
   const [loadedPages, setLoadedPages] = useState(1);
 
@@ -128,7 +161,7 @@ export function ReviewSection({ bookId, reviews, rating, reviewCount }: ReviewSe
         <>
           <div className="flex w-full flex-col gap-[18px] lg:grid lg:grid-cols-2 lg:gap-5">
             {visibleReviews.map((review) => {
-              const canDelete = user?.id === review.userId;
+              const canDelete = authUser?.id === review.userId;
               return (
                 <ReviewCard
                   key={review.id}

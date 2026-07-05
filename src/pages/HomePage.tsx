@@ -50,6 +50,58 @@ function CategoryCard({
 }
 
 const RECOMMEND_INITIAL_SIZE = 10;
+const BANNER_INTERVAL_MS = 60_000;
+
+const HERO_BANNERS = [
+  { src: '/figma/banner.png', alt: 'Welcome to Booky' },
+  { src: '/figma/banner.png', alt: 'Welcome to Booky' },
+  { src: '/figma/banner.png', alt: 'Welcome to Booky' },
+] as const;
+
+function HeroBannerCarousel() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    if (paused) return;
+
+    const id = window.setInterval(() => {
+      setActiveIndex((i) => (i + 1) % HERO_BANNERS.length);
+    }, BANNER_INTERVAL_MS);
+
+    return () => window.clearInterval(id);
+  }, [paused]);
+
+  return (
+    <section
+      className='flex flex-col items-center gap-4'
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <img
+        src={HERO_BANNERS[activeIndex].src}
+        alt={HERO_BANNERS[activeIndex].alt}
+        className='w-full rounded-3xl'
+      />
+      <div className='flex h-2.5 items-center gap-1.5' role='tablist' aria-label='Banner slides'>
+        {HERO_BANNERS.map((_, i) => (
+          <button
+            key={i}
+            type='button'
+            role='tab'
+            aria-selected={i === activeIndex}
+            aria-label={`Slide ${i + 1}`}
+            onClick={() => setActiveIndex(i)}
+            className={cn(
+              'size-2.5 shrink-0 rounded-full transition-colors',
+              i === activeIndex ? 'bg-[#1C65DA]' : 'bg-[#D5D7DA]',
+            )}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
 
 function useRecommendRowSize() {
   const [rowSize, setRowSize] = useState(() =>
@@ -231,25 +283,7 @@ export function HomePage() {
 
   return (
     <div className='mx-auto flex w-full max-w-[1200px] flex-col gap-8 md:gap-12'>
-      {/* Hero banner */}
-      <section className='flex flex-col items-center gap-4'>
-        <img
-          src='/figma/banner.png'
-          alt='Welcome to Booky'
-          className='w-full rounded-3xl'
-        />
-        <div className='flex h-2.5 items-center gap-1.5'>
-          {[0, 1, 2].map((i) => (
-            <span
-              key={i}
-              className={cn(
-                'size-2.5 shrink-0 rounded-full transition-colors',
-                i === 0 ? 'bg-[#1C65DA]' : 'bg-[#D5D7DA]',
-              )}
-            />
-          ))}
-        </div>
-      </section>
+      <HeroBannerCarousel />
 
       {/* Categories */}
       <section className='grid grid-cols-3 gap-3 md:grid-cols-6 md:gap-4'>

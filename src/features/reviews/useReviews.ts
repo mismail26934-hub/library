@@ -1,6 +1,9 @@
+import { useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { reviewsApi, type MyReviewsQuery, type ReviewPayload } from "@/lib/api-endpoints";
+import { useAppSelector } from "@/app/hooks";
+import { enrichReviewsWithProfilePhotos, normalizeReview, normalizeReviews } from "./reviewUser";
+import { adminApi, reviewsApi, type MyReviewsQuery, type ReviewPayload } from "@/lib/api-endpoints";
 import { getApiErrorMessage } from "@/lib/axios";
 import { qk } from "@/lib/query-keys";
 import type { BookDetail, Review } from "@/types";
@@ -8,8 +11,68 @@ import type { BookDetail, Review } from "@/types";
 export function useBookReviews(bookId: number | string) {
   return useQuery({
     queryKey: qk.reviews(bookId),
-    queryFn: () => reviewsApi.byBook(bookId),
+    queryFn: async () => {
+      const data = await reviewsApi.byBook(bookId);
+      return { ...data, reviews: normalizeReviews(data.reviews) };
+    },
     enabled: !!bookId,
+  });
+}
+
+export interface ReviewerRef {
+  userId: number;
+  name: string;
+}
+
+/** Resolve reviewer avatars via admin user list when review API omits profilePhoto. */
+export function useReviewerPhotos(reviewers: ReviewerRef[]) {
+  const authUser = useAppSelector((s) => s.auth.user);
+  const isAdmin = authUser?.role === "ADMIN";
+  const uniqueReviewers = useMemo(() => {
+    const seen = new Set<number>();
+    return reviewers.filter(({ userId }) => {
+      if (userId <= 0 || seen.has(userId)) return false;
+      seen.add(userId);
+      return true;
+    });
+  }, [reviewers]);
+  const reviewerKey = useMemo(
+    () => uniqueReviewers.map((r) => r.userId).sort((a, b) => a - b),
+    [uniqueReviewers],
+  );
+
+  return useQuery({
+    queryKey: ["reviewer-photos", reviewerKey] as const,
+    queryFn: async () => {
+      const map = new Map<number, string | null>();
+      const needed = new Map(uniqueReviewers.map((r) => [r.userId, r.name]));
+
+      for (const [userId, name] of [...needed.entries()]) {
+        const { users } = await adminApi.users({ page: 1, limit: 10, q: name });
+        const match = users.find((user) => user.id === userId);
+        if (match?.profilePhoto) {
+          map.set(userId, match.profilePhoto);
+          needed.delete(userId);
+        }
+      }
+
+      let page = 1;
+      while (needed.size > 0) {
+        const { users, pagination } = await adminApi.users({ page, limit: 50 });
+        for (const user of users) {
+          if (needed.has(user.id) && user.profilePhoto) {
+            map.set(user.id, user.profilePhoto);
+            needed.delete(user.id);
+          }
+        }
+        if (page >= pagination.totalPages) break;
+        page += 1;
+      }
+
+      return map;
+    },
+    enabled: isAdmin && uniqueReviewers.length > 0,
+    staleTime: 1000 * 60 * 5,
   });
 }
 
@@ -22,10 +85,34 @@ export function useMyReviews(params: MyReviewsQuery) {
 
 export function useAddReview(bookId: number) {
   const qc = useQueryClient();
+  const currentUser = useAppSelector((s) => s.auth.user);
 
   return useMutation({
     mutationFn: (payload: ReviewPayload) => reviewsApi.create(payload),
-    onSuccess: () => {
+    onSuccess: (review) => {
+      const normalized = normalizeReview(review);
+      const enriched = enrichReviewsWithProfilePhotos([normalized], currentUser)[0];
+
+      qc.setQueryData<{ reviews: Review[] } | undefined>(qk.reviews(bookId), (old) => {
+        if (!old) return old;
+        const exists = old.reviews.some((r) => r.id === enriched.id);
+        return {
+          ...old,
+          reviews: exists
+            ? old.reviews.map((r) => (r.id === enriched.id ? enriched : r))
+            : [enriched, ...old.reviews],
+        };
+      });
+
+      qc.setQueryData<BookDetail | undefined>(qk.book(bookId), (old) => {
+        if (!old) return old;
+        const exists = old.reviews.some((r) => r.id === enriched.id);
+        const reviews = exists
+          ? old.reviews.map((r) => (r.id === enriched.id ? enriched : r))
+          : [enriched, ...old.reviews];
+        return { ...old, reviews, reviewCount: exists ? old.reviewCount : old.reviewCount + 1 };
+      });
+
       toast.success("Review submitted");
       qc.invalidateQueries({ queryKey: qk.reviews(bookId) });
       qc.invalidateQueries({ queryKey: qk.book(bookId) });

@@ -6,10 +6,11 @@ import { qk } from "@/lib/query-keys";
 import { useAppDispatch } from "@/app/hooks";
 import { setUser } from "@/features/auth/authSlice";
 
-export function useProfile() {
+export function useProfile(enabled = true) {
   return useQuery({
     queryKey: qk.profile(),
     queryFn: () => meApi.get(),
+    enabled,
   });
 }
 

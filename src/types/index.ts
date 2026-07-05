@@ -59,6 +59,12 @@ export interface Book {
   category: Category;
 }
 
+export interface ReviewUser {
+  id: number;
+  name: string;
+  profilePhoto?: string | null;
+}
+
 export interface Review {
   id: number;
   star: number;
@@ -66,7 +72,7 @@ export interface Review {
   userId: number;
   bookId: number;
   createdAt: string;
-  user: { id: number; name: string };
+  user: ReviewUser;
   book?: Book;
 }
 

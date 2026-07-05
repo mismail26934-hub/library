@@ -9,6 +9,11 @@ interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
 const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
   ({ className, src, fallback, ...props }, ref) => {
     const [error, setError] = React.useState(false);
+
+    React.useEffect(() => {
+      setError(false);
+    }, [src]);
+
     return (
       <div
         ref={ref}
