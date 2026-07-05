@@ -114,7 +114,13 @@ export interface MyReviewsQuery {
 
 export const reviewsApi = {
   create: (payload: ReviewPayload) =>
-    api.post<ApiResponse<Review>>("/reviews", payload).then((r) => r.data.data),
+    api
+      .post<ApiResponse<Review | { review: Review }>>("/reviews", payload)
+      .then((r) => {
+        const data = r.data.data;
+        if (!data) throw new Error("Empty review response");
+        return "review" in data && data.review ? data.review : (data as Review);
+      }),
   byBook: (bookId: number | string, page = 1) =>
     api
       .get<ApiResponse<ReviewsResponse>>(`/reviews/book/${bookId}`, { params: { page } })

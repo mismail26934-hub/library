@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useAppSelector } from "@/app/hooks";
-import { enrichReviewsWithProfilePhotos, normalizeReview, normalizeReviews } from "./reviewUser";
+import { enrichReviewsWithProfilePhotos, ensureReviewUser, normalizeReview, normalizeReviews } from "./reviewUser";
 import { adminApi, reviewsApi, type MyReviewsQuery, type ReviewPayload } from "@/lib/api-endpoints";
 import { getApiErrorMessage } from "@/lib/axios";
 import { qk } from "@/lib/query-keys";
@@ -90,7 +90,17 @@ export function useAddReview(bookId: number) {
   return useMutation({
     mutationFn: (payload: ReviewPayload) => reviewsApi.create(payload),
     onSuccess: (review) => {
-      const normalized = normalizeReview(review);
+      if (!review?.id) {
+        toast.success("Review submitted");
+        qc.invalidateQueries({ queryKey: qk.reviews(bookId) });
+        qc.invalidateQueries({ queryKey: qk.book(bookId) });
+        qc.invalidateQueries({ queryKey: ["my-reviews"] });
+        return;
+      }
+
+      const normalized = currentUser
+        ? ensureReviewUser(review, currentUser)
+        : normalizeReview(review);
       const enriched = enrichReviewsWithProfilePhotos([normalized], currentUser)[0];
 
       qc.setQueryData<{ reviews: Review[] } | undefined>(qk.reviews(bookId), (old) => {

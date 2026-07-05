@@ -121,7 +121,7 @@ export function BookDetailPage() {
               </div>
 
               <div className="flex w-full items-center gap-5">
-                <BookDetailStat value={book.totalCopies} label="Stock" />
+                <BookDetailStat value={book.availableCopies} label="Stock" />
                 <StatDivider />
                 <BookDetailStat value={book.borrowCount} label="Rating" />
                 <StatDivider />
