@@ -8,6 +8,9 @@ interface PaginationProps {
   limit?: number;
   onPageChange: (page: number) => void;
   disabled?: boolean;
+  showSummary?: boolean;
+  alwaysShowLabels?: boolean;
+  className?: string;
 }
 
 /** Builds a compact page list like: 1 2 3 … 10 */
@@ -32,16 +35,25 @@ export function Pagination({
   limit = 10,
   onPageChange,
   disabled,
+  showSummary = true,
+  alwaysShowLabels = false,
+  className,
 }: PaginationProps) {
   if (totalPages <= 1 && !total) return null;
 
   const from = total ? (page - 1) * limit + 1 : 0;
   const to = total ? Math.min(page * limit, total) : 0;
   const items = getPageItems(page, Math.max(totalPages, 1));
+  const labelClass = alwaysShowLabels ? "inline" : "hidden sm:inline";
 
   return (
-    <div className="flex flex-col items-center justify-between gap-4 px-2 py-2 sm:flex-row sm:px-6">
-      {total != null && (
+    <div
+      className={
+        "flex flex-col items-center justify-between gap-4 px-2 py-2 sm:flex-row sm:px-6 " +
+        (className ?? "")
+      }
+    >
+      {showSummary && total != null && (
         <p className="text-sm font-medium tracking-[-0.48px] text-[var(--color-ink)] md:text-base">
           Showing {from} to {to} of {total} entries
         </p>
@@ -54,7 +66,7 @@ export function Pagination({
           className="flex items-center gap-1.5 text-sm font-medium tracking-[-0.48px] text-[var(--color-ink)] disabled:opacity-40 md:text-base"
         >
           <ChevronLeft className="size-6" />
-          <span className="hidden sm:inline">Previous</span>
+          <span className={labelClass}>Previous</span>
         </button>
 
         <div className="flex items-center">
@@ -91,7 +103,7 @@ export function Pagination({
           onClick={() => onPageChange(page + 1)}
           className="flex items-center gap-1.5 text-sm font-medium tracking-[-0.48px] text-[var(--color-ink)] disabled:opacity-40 md:text-base"
         >
-          <span className="hidden sm:inline">Next</span>
+          <span className={labelClass}>Next</span>
           <ChevronRight className="size-6" />
         </button>
       </div>

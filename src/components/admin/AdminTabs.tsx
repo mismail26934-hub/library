@@ -16,10 +16,10 @@ export function AdminTabs() {
           to={tab.to}
           className={({ isActive }) =>
             cn(
-              "flex h-10 flex-1 items-center justify-center rounded-xl px-3 text-center text-base tracking-[-0.32px] transition-colors",
+              "flex h-10 flex-1 items-center justify-center rounded-xl px-3 text-center transition-colors",
               isActive
-                ? "shadow-card bg-white font-bold text-[var(--color-ink)]"
-                : "font-medium text-[var(--color-ink-subtle)] hover:text-[var(--color-ink)]",
+                ? "shadow-card bg-white text-sm font-bold tracking-[-0.28px] text-[var(--color-ink)] lg:text-base lg:tracking-[-0.32px]"
+                : "text-sm font-medium tracking-[-0.42px] text-[var(--color-ink-subtle)] hover:text-[var(--color-ink)] lg:text-base lg:tracking-[-0.48px]",
             )
           }
         >

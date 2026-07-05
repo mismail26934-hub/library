@@ -33,10 +33,10 @@ function AdminHeader() {
 
   return (
     <header className="shadow-card sticky top-0 z-40 bg-white">
-      <div className="mx-auto flex h-20 max-w-[1440px] items-center justify-between gap-4 px-5 md:px-12 lg:px-[120px]">
+      <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-4 px-4 md:h-20 md:px-12 lg:px-[120px]">
         <Link to="/admin/books" className="flex shrink-0 items-center gap-[15px]">
-          <img src="/figma/logo.png" alt="Booky" className="size-[42px]" />
-          <span className="text-[26px] font-bold tracking-tight text-[var(--color-ink)] md:text-[32px]">
+          <img src="/figma/logo.png" alt="Booky" className="size-10 md:size-[42px]" />
+          <span className="hidden text-[26px] font-bold tracking-tight text-[var(--color-ink)] md:inline md:text-[32px]">
             Booky
           </span>
         </Link>
@@ -47,7 +47,7 @@ function AdminHeader() {
             onClick={() => setOpen((o) => !o)}
             className="flex items-center gap-3 md:gap-4"
           >
-            <Avatar className="size-12" src={user?.profilePhoto} fallback={getInitials(user?.name)} />
+            <Avatar className="size-10 md:size-12" src={user?.profilePhoto} fallback={getInitials(user?.name)} />
             <span className="hidden text-lg font-semibold tracking-[-0.36px] text-[var(--color-ink)] sm:block">
               {user?.name ?? "Admin"}
             </span>
@@ -86,8 +86,8 @@ export function AdminLayout() {
   return (
     <div className="flex min-h-screen flex-col bg-white">
       <AdminHeader />
-      <main className="mx-auto w-full max-w-[1200px] flex-1 px-5 py-8 md:px-12 md:py-12 lg:px-0">
-        <div className="mb-6 md:mb-8">
+      <main className="mx-auto w-full max-w-[1200px] flex-1 px-4 py-6 md:px-12 md:py-12 lg:px-0">
+        <div className="mb-4 md:mb-8">
           <AdminTabs />
         </div>
         <Outlet />
