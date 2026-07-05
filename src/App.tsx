@@ -13,6 +13,7 @@ import { MyReviewsPage } from "@/pages/MyReviewsPage";
 import { ProfilePage } from "@/pages/ProfilePage";
 import { CartPage } from "@/pages/CartPage";
 import { CheckoutPage } from "@/pages/CheckoutPage";
+import { AuthorPage } from "@/pages/AuthorPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { AdminUsersPage } from "@/pages/admin/AdminUsersPage";
 import { AdminBooksPage } from "@/pages/admin/AdminBooksPage";
@@ -45,6 +46,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/books" element={<BookListPage />} />
         <Route path="/books/:id" element={<BookDetailPage />} />
+        <Route path="/authors/:id" element={<AuthorPage />} />
         <Route path="/cart" element={<CartPage />} />
 
         <Route element={<ProtectedRoute />}>

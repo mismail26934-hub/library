@@ -46,6 +46,7 @@ export interface BooksQuery {
   q?: string;
   category?: number | string;
   rating?: number;
+  authorId?: number | string;
 }
 
 export const booksApi = {
@@ -53,9 +54,9 @@ export const booksApi = {
     api.get<ApiResponse<BooksResponse>>("/books", { params }).then((r) => r.data.data),
   detail: (id: number | string) =>
     api.get<ApiResponse<BookDetail>>(`/books/${id}`).then((r) => r.data.data),
-  recommend: (page = 1) =>
+  recommend: (page = 1, limit = 10) =>
     api
-      .get<ApiResponse<BooksResponse>>("/books/recommend", { params: { page } })
+      .get<ApiResponse<BooksResponse>>("/books/recommend", { params: { page, limit } })
       .then((r) => r.data.data),
 };
 
