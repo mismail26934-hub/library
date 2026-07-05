@@ -102,9 +102,24 @@ export function Navbar() {
             </form>
 
             {/* Right actions */}
-            <div className="flex shrink-0 items-center gap-4 md:gap-6">
+            <div
+              className={cn(
+                "shrink-0 items-center gap-4 md:gap-6",
+                searchOpen ? "hidden md:flex" : "flex",
+              )}
+            >
+              {/* Search trigger (mobile) */}
+              <button
+                type="button"
+                aria-label="Search"
+                onClick={() => setSearchOpen(true)}
+                className="md:hidden"
+              >
+                <Search className="size-6 text-[var(--color-ink-strong)]" />
+              </button>
+
               <Link to="/cart" className="relative" aria-label="Cart">
-                <BagIcon className="size-8 text-[var(--color-ink-strong)]" />
+                <BagIcon className="size-7 text-[var(--color-ink-strong)] md:size-8" />
                 {cartCount > 0 && (
                   <span className="absolute -right-1.5 -top-1 flex size-5 items-center justify-center rounded-full bg-[#ee1d52] text-[12px] font-bold text-white">
                     {cartCount}
@@ -112,29 +127,30 @@ export function Navbar() {
                 )}
               </Link>
 
-              <div className="relative hidden md:block" ref={menuRef}>
+              <div className="relative" ref={menuRef}>
                 <button
                   type="button"
                   onClick={() => setMenuOpen((o) => !o)}
                   className="flex items-center gap-3"
+                  aria-label="Account menu"
                 >
                   <Avatar
-                    className="size-12"
+                    className="size-10 md:size-12"
                     src={user?.profilePhoto}
                     fallback={getInitials(user?.name)}
                   />
-                  <span className="text-lg font-semibold tracking-[-0.36px] text-[var(--color-ink)]">
+                  <span className="hidden text-lg font-semibold tracking-[-0.36px] text-[var(--color-ink)] md:inline">
                     {user?.name ?? "Account"}
                   </span>
                   <ChevronDown
                     className={cn(
-                      "size-6 text-[var(--color-ink)] transition-transform",
+                      "hidden size-6 text-[var(--color-ink)] transition-transform md:block",
                       menuOpen && "rotate-180",
                     )}
                   />
                 </button>
                 {menuOpen && (
-                  <div className="shadow-card absolute right-0 top-[calc(100%+12px)] flex w-[184px] flex-col gap-4 rounded-2xl bg-white p-4 text-base font-semibold tracking-[-0.32px]">
+                  <div className="shadow-card fixed inset-x-4 top-[84px] z-50 flex flex-col gap-4 rounded-2xl bg-white p-4 text-base font-semibold tracking-[-0.32px] md:absolute md:inset-x-auto md:right-0 md:top-[calc(100%+12px)] md:w-[184px]">
                     {user?.role === "ADMIN" && (
                       <Link
                         to="/admin"
@@ -175,14 +191,6 @@ export function Navbar() {
                   </div>
                 )}
               </div>
-
-              <button
-                className="md:hidden"
-                aria-label="Menu"
-                onClick={() => setMobileOpen((o) => !o)}
-              >
-                {mobileOpen ? <X className="size-6" /> : <Menu className="size-6" />}
-              </button>
             </div>
           </>
         ) : (
