@@ -89,7 +89,7 @@ export function AdminBooksPage() {
               <BookRow
                 key={book.id}
                 book={book}
-                onPreview={() => navigate(`/books/${book.id}`)}
+                onPreview={() => navigate(`/admin/books/${book.id}/preview`)}
                 onEdit={() => navigate(`/admin/books/${book.id}/edit`)}
                 onDelete={() => setToDelete(book)}
               />

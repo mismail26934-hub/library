@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, ExternalLink, LogOut } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
@@ -83,13 +83,18 @@ function AdminHeader() {
 }
 
 export function AdminLayout() {
+  const { pathname } = useLocation();
+  const hideTabs = /\/admin\/books\/\d+\/preview$/.test(pathname);
+
   return (
     <div className="flex min-h-screen flex-col bg-white">
       <AdminHeader />
       <main className="mx-auto w-full max-w-[1200px] flex-1 px-4 py-6 md:px-12 md:py-12 lg:px-0">
-        <div className="mb-4 md:mb-8">
-          <AdminTabs />
-        </div>
+        {!hideTabs && (
+          <div className="mb-4 md:mb-8">
+            <AdminTabs />
+          </div>
+        )}
         <Outlet />
       </main>
     </div>

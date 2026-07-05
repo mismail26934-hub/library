@@ -17,6 +17,7 @@ import { NotFoundPage } from "@/pages/NotFoundPage";
 import { AdminUsersPage } from "@/pages/admin/AdminUsersPage";
 import { AdminBooksPage } from "@/pages/admin/AdminBooksPage";
 import { AdminBookFormPage } from "@/pages/admin/AdminBookFormPage";
+import { AdminBookPreviewPage } from "@/pages/admin/AdminBookPreviewPage";
 import { AdminBorrowedListPage } from "@/pages/admin/AdminBorrowedListPage";
 
 export default function App() {
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/admin/books" element={<AdminBooksPage />} />
           <Route path="/admin/books/new" element={<AdminBookFormPage />} />
           <Route path="/admin/books/:id/edit" element={<AdminBookFormPage />} />
+          <Route path="/admin/books/:id/preview" element={<AdminBookPreviewPage />} />
           <Route path="/admin/users" element={<AdminUsersPage />} />
           <Route path="/admin/loans" element={<AdminBorrowedListPage />} />
         </Route>
