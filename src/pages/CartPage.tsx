@@ -77,7 +77,12 @@ export function CartPage() {
   }
 
   return (
-    <div className='mx-auto flex w-full max-w-[1000px] flex-col gap-6 md:gap-8'>
+    <div
+      className={cn(
+        'mx-auto flex w-full max-w-[1000px] flex-col gap-6 md:gap-8',
+        selectedItems.length > 0 && 'pb-28 lg:pb-0'
+      )}
+    >
       <h1 className='text-[28px] font-bold leading-9 text-[var(--color-ink)] md:text-4xl md:leading-[44px]'>
         My Cart
       </h1>
@@ -146,8 +151,8 @@ export function CartPage() {
           ))}
         </div>
 
-        {/* Loan Summary */}
-        <aside className='shadow-card flex w-full flex-col gap-6 rounded-2xl bg-white p-5 lg:sticky lg:top-24 lg:w-[318px] lg:shrink-0'>
+        {/* Loan Summary (desktop) */}
+        <aside className='shadow-card hidden w-full flex-col gap-6 rounded-2xl bg-white p-5 lg:flex lg:sticky lg:top-24 lg:w-[318px] lg:shrink-0'>
           <h2 className='text-xl font-bold tracking-[-0.4px] text-[var(--color-ink)]'>
             Loan Summary
           </h2>
@@ -169,6 +174,30 @@ export function CartPage() {
           </button>
         </aside>
       </div>
+
+      {/* Loan Summary floating bar (mobile) — only when at least one book selected */}
+      {selectedItems.length > 0 && (
+        <div className='shadow-card fixed inset-x-0 bottom-0 z-40 flex h-[72px] items-center justify-between border-t border-[#d5d7da] bg-white px-4 lg:hidden'>
+          <div className='flex flex-col'>
+            <span className='text-sm font-medium tracking-[-0.42px] text-[var(--color-ink)]'>
+              Total Book
+            </span>
+            <span className='text-sm font-bold tracking-[-0.28px] text-[var(--color-ink)]'>
+              {selectedItems.length}{' '}
+              {selectedItems.length === 1 ? 'Item' : 'Items'}
+            </span>
+          </div>
+          <button
+            type='button'
+            onClick={() => checkout.mutate(selectedItems)}
+            disabled={checkout.isPending}
+            className='flex h-10 w-[150px] items-center justify-center gap-2 rounded-full bg-[#1c65da] text-sm font-bold tracking-[-0.28px] text-white transition-colors hover:bg-[#1c65da]/90 disabled:opacity-60'
+          >
+            {checkout.isPending && <Loader2 className='size-4 animate-spin' />}
+            Borrow Book
+          </button>
+        </div>
+      )}
     </div>
   );
 }
