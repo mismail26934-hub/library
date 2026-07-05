@@ -1,14 +1,13 @@
 import { useMemo, useState } from "react";
 import { useAdminLoans } from "@/features/admin/useAdmin";
 import { useDebounce } from "@/lib/useDebounce";
+import { AdminBorrowedLoanCard } from "@/components/admin/AdminBorrowedLoanCard";
+import { AdminBorrowedLoanCardDesktop } from "@/components/admin/AdminBorrowedLoanCardDesktop";
 import { SearchLarge } from "@/components/admin/SearchLarge";
 import { FilterPills } from "@/components/admin/FilterPills";
 import { Pagination } from "@/components/admin/Pagination";
-import { LoanStatusBadge } from "@/components/admin/LoanStatusBadge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState, ErrorState } from "@/components/states";
-import { formatDate } from "@/lib/utils";
-import type { AdminLoan } from "@/types";
 
 const LIMIT = 10;
 
@@ -46,10 +45,17 @@ export function AdminBorrowedListPage() {
   const loans = data?.loans ?? [];
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-6">
-        <h1 className="text-[28px] font-bold tracking-[-0.84px] text-[var(--color-ink)]">Borrowed List</h1>
-        <SearchLarge value={search} onChange={(v) => { setSearch(v); setPage(1); }} placeholder="Search" />
+    <div className="flex flex-col gap-[15px] md:gap-6">
+      <div className="flex flex-col gap-[15px] md:max-w-[600px] md:gap-6">
+        <h1 className="text-2xl font-bold leading-9 tracking-[-0.72px] text-[var(--color-ink)] md:text-[28px] md:leading-[38px] md:tracking-[-0.84px]">
+          Borrowed List
+        </h1>
+        <SearchLarge
+          value={search}
+          onChange={(v) => { setSearch(v); setPage(1); }}
+          placeholder="Search"
+          className="h-11 w-full md:h-12 md:max-w-[600px]"
+        />
       </div>
       <FilterPills
         options={FILTERS}
@@ -69,9 +75,14 @@ export function AdminBorrowedListPage() {
         <EmptyState title="No records found" description="No borrowing activity matches your filter." />
       ) : (
         <>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 md:hidden">
             {loans.map((loan) => (
-              <BorrowedCard key={loan.id} loan={loan} />
+              <AdminBorrowedLoanCard key={loan.id} loan={loan} />
+            ))}
+          </div>
+          <div className="hidden flex-col gap-6 md:flex">
+            {loans.map((loan) => (
+              <AdminBorrowedLoanCardDesktop key={loan.id} loan={loan} />
             ))}
           </div>
           <Pagination
@@ -84,62 +95,6 @@ export function AdminBorrowedListPage() {
           />
         </>
       )}
-    </div>
-  );
-}
-
-function BorrowedCard({ loan }: { loan: AdminLoan }) {
-  const { book, borrower } = loan;
-  return (
-    <div className="shadow-card flex flex-col gap-5 rounded-2xl bg-white p-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <span className="font-bold text-[var(--color-ink)]">Status</span>
-          <LoanStatusBadge status={loan.status} />
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="font-bold text-[var(--color-ink)]">Due Date</span>
-          <span className="inline-flex items-center rounded-[4px] bg-[rgba(238,29,82,0.1)] px-2 py-0.5 text-sm font-bold text-[#ee1d52]">
-            {formatDate(loan.dueAt)}
-          </span>
-        </div>
-      </div>
-
-      <div className="h-px w-full bg-[var(--color-border)]" />
-
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div className="flex flex-1 items-center gap-4">
-          <div className="h-[138px] w-[92px] shrink-0 overflow-hidden rounded-md bg-secondary">
-            {book?.coverImage && (
-              <img src={book.coverImage} alt={book.title} className="size-full object-cover" />
-            )}
-          </div>
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <span className="w-fit rounded-md border border-[var(--color-border)] px-2 text-sm font-bold text-[var(--color-ink)]">
-              {book?.category?.name ?? "Category"}
-            </span>
-            <p className="truncate text-xl font-bold tracking-[-0.4px] text-[var(--color-ink)]">
-              {book?.title ?? "-"}
-            </p>
-            <p className="truncate font-medium tracking-[-0.48px] text-[var(--color-ink-muted)]">
-              {book?.author?.name ?? "-"}
-            </p>
-            <div className="flex items-center gap-2 text-sm font-bold text-[var(--color-ink)]">
-              <span>{formatDate(loan.borrowedAt)}</span>
-              <span className="size-[3px] rounded-full bg-[var(--color-ink)]" />
-              <span>Duration {loan.durationDays ?? "-"} Days</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col justify-center sm:min-w-[160px]">
-          <p className="text-sm font-semibold tracking-[-0.32px] text-[var(--color-ink-subtle)]">
-            borrower&apos;s name
-          </p>
-          <p className="text-xl font-bold tracking-[-0.4px] text-[var(--color-ink)]">
-            {borrower?.name ?? "-"}
-          </p>
-        </div>
-      </div>
     </div>
   );
 }
