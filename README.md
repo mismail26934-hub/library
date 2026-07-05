@@ -18,15 +18,15 @@ A responsive library web application where users can log in, browse books, borro
 
 ## Features
 
-| Page | Features |
-| --- | --- |
-| Login / Register | Auth forms, token persistence |
-| Home | Hero + recommended books |
-| Book List | Category filter, rating filter, debounced search, pagination |
-| Book Detail | Stock, reviews, **optimistic borrow**, add-to-cart |
-| My Loans | Tabs (All/Active/Returned/Overdue), return action |
-| Cart | Multi-borrow checkout with per-book duration |
-| Profile | User info, loan statistics, profile update |
+| Page             | Features                                                     |
+| ---------------- | ------------------------------------------------------------ |
+| Login / Register | Auth forms, token persistence                                |
+| Home             | Hero + recommended books                                     |
+| Book List        | Category filter, rating filter, debounced search, pagination |
+| Book Detail      | Stock, reviews, **optimistic borrow**, add-to-cart           |
+| My Loans         | Tabs (All/Active/Returned/Overdue), return action            |
+| Cart             | Multi-borrow checkout with per-book duration                 |
+| Profile          | User info, loan statistics, profile update                   |
 
 ### Optimistic UI
 
@@ -46,12 +46,6 @@ optimistically removes it from the list too.
 ```bash
 npm install
 npm run dev
-```
-
-The app expects the API base URL in `.env`:
-
-```
-VITE_API_URL=https://library-backend-production-b9cf.up.railway.app/api
 ```
 
 ## Build
