@@ -11,8 +11,8 @@ interface RelatedBooksSectionProps {
 
 export function RelatedBooksSection({ bookId, categoryId }: RelatedBooksSectionProps) {
   const { data, isLoading } = useQuery({
-    queryKey: qk.books({ category: categoryId, limit: 8, page: 1 }),
-    queryFn: () => booksApi.list({ category: categoryId, limit: 8, page: 1 }),
+    queryKey: qk.books({ categoryId, limit: 8, page: 1 }),
+    queryFn: () => booksApi.list({ categoryId, limit: 8, page: 1 }),
     enabled: !!categoryId,
   });
 

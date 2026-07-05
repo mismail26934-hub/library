@@ -30,8 +30,8 @@ export function BookListPage() {
       page,
       limit: 12,
       q: debouncedSearch || undefined,
-      category: category ?? undefined,
-      rating: rating ?? undefined,
+      categoryId: category ?? undefined,
+      minRating: rating ?? undefined,
     }),
     [page, debouncedSearch, category, rating],
   );

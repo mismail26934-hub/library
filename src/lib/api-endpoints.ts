@@ -44,8 +44,8 @@ export interface BooksQuery {
   page?: number;
   limit?: number;
   q?: string;
-  category?: number | string;
-  rating?: number;
+  categoryId?: number | string;
+  minRating?: number;
   authorId?: number | string;
 }
 
