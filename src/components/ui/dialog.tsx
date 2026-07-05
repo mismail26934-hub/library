@@ -26,7 +26,7 @@ function Dialog({ open, onOpenChange, children }: DialogProps) {
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="fixed inset-0 bg-black/50 animate-in"
+        className="fixed inset-0 bg-[rgba(10,13,18,0.5)] animate-in"
         onClick={() => onOpenChange(false)}
       />
       {children}

@@ -3,8 +3,15 @@ import { LoanStatusBadge } from "@/components/admin/LoanStatusBadge";
 import { formatDate, formatDueDate } from "@/lib/utils";
 import type { Loan } from "@/types";
 
-export function BorrowedLoanCard({ loan }: { loan: Loan }) {
+interface BorrowedLoanCardProps {
+  loan: Loan;
+  onGiveReview?: () => void;
+  onReturn?: () => void;
+}
+
+export function BorrowedLoanCard({ loan, onGiveReview, onReturn }: BorrowedLoanCardProps) {
   const { book } = loan;
+  const isReturned = loan.status === "RETURNED";
 
   return (
     <article className="shadow-card flex flex-col gap-4 rounded-2xl bg-white p-4 lg:gap-5 lg:p-5">
@@ -64,12 +71,13 @@ export function BorrowedLoanCard({ loan }: { loan: Loan }) {
           </div>
         </div>
 
-        <Link
-          to={`/books/${book.id}`}
+        <button
+          type="button"
+          onClick={isReturned ? onGiveReview : onReturn}
           className="flex h-10 w-full shrink-0 items-center justify-center rounded-full bg-[#1c65da] text-base font-bold tracking-[-0.32px] text-white transition-colors hover:bg-[#1c65da]/90 lg:h-10 lg:w-[182px]"
         >
-          Give Review
-        </Link>
+          {isReturned ? "Give Review" : "Return"}
+        </button>
       </div>
     </article>
   );

@@ -15,6 +15,7 @@ import type {
   Profile,
   Review,
   ReviewsResponse,
+  MyReviewsResponse,
   User,
   UsersResponse,
 } from "@/types";
@@ -104,6 +105,12 @@ export interface ReviewPayload {
   comment: string;
 }
 
+export interface MyReviewsQuery {
+  q?: string;
+  page?: number;
+  limit?: number;
+}
+
 export const reviewsApi = {
   create: (payload: ReviewPayload) =>
     api.post<ApiResponse<Review>>("/reviews", payload).then((r) => r.data.data),
@@ -113,7 +120,10 @@ export const reviewsApi = {
       .then((r) => r.data.data),
   remove: (id: number) =>
     api.delete<ApiResponse<unknown>>(`/reviews/${id}`).then((r) => r.data.data),
-  mine: () => api.get<ApiResponse<{ reviews: Review[] }>>("/me/reviews").then((r) => r.data.data),
+  mine: (params?: MyReviewsQuery) =>
+    api
+      .get<ApiResponse<MyReviewsResponse>>("/me/reviews", { params })
+      .then((r) => r.data.data),
 };
 
 /* --------------------------------- Me --------------------------------- */

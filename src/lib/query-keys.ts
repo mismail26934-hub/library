@@ -1,4 +1,4 @@
-import type { AdminListQuery, BooksQuery, MyLoansQuery } from "./api-endpoints";
+import type { AdminListQuery, BooksQuery, MyLoansQuery, MyReviewsQuery } from "./api-endpoints";
 
 export const qk = {
   books: (params: BooksQuery) => ["books", params] as const,
@@ -10,7 +10,7 @@ export const qk = {
   myLoans: (params: MyLoansQuery) => ["my-loans", params] as const,
   profile: () => ["profile"] as const,
   cart: () => ["cart"] as const,
-  myReviews: () => ["my-reviews"] as const,
+  myReviews: (params: MyReviewsQuery) => ["my-reviews", params] as const,
   adminUsers: (params: AdminListQuery) => ["admin", "users", params] as const,
   adminLoans: (params: AdminListQuery) => ["admin", "loans", params] as const,
 };

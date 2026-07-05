@@ -3,13 +3,15 @@ import { Link } from "react-router-dom";
 import { useMyLoans } from "@/features/loans/useLoans";
 import { ProfilePageLayout } from "@/components/ProfilePageLayout";
 import { BorrowedLoanCard } from "@/components/loans/BorrowedLoanCard";
+import { GiveReviewModal } from "@/components/reviews/GiveReviewModal";
+import { ReturnBookModal } from "@/components/loans/ReturnBookModal";
 import { SearchLarge } from "@/components/admin/SearchLarge";
 import { FilterPills } from "@/components/admin/FilterPills";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState, ErrorState } from "@/components/states";
 import { useDebounce } from "@/lib/useDebounce";
-import type { Loan } from "@/types";
+import type { Book, Loan } from "@/types";
 
 const LIMIT = 10;
 
@@ -27,6 +29,8 @@ export function MyLoansPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [loans, setLoans] = useState<Loan[]>([]);
+  const [reviewBook, setReviewBook] = useState<Book | null>(null);
+  const [returnLoan, setReturnLoan] = useState<Loan | null>(null);
 
   const debouncedSearch = useDebounce(search, 450);
 
@@ -98,7 +102,12 @@ export function MyLoansPage() {
           <div className="flex flex-col items-center gap-4 lg:gap-6">
             <div className="flex w-full flex-col gap-4">
               {loans.map((loan) => (
-                <BorrowedLoanCard key={loan.id} loan={loan} />
+                <BorrowedLoanCard
+                  key={loan.id}
+                  loan={loan}
+                  onGiveReview={() => setReviewBook(loan.book)}
+                  onReturn={() => setReturnLoan(loan)}
+                />
               ))}
             </div>
 
@@ -115,6 +124,22 @@ export function MyLoansPage() {
           </div>
         )}
       </div>
+
+      <GiveReviewModal
+        open={reviewBook !== null}
+        book={reviewBook}
+        onOpenChange={(open) => {
+          if (!open) setReviewBook(null);
+        }}
+      />
+
+      <ReturnBookModal
+        open={returnLoan !== null}
+        loan={returnLoan}
+        onOpenChange={(open) => {
+          if (!open) setReturnLoan(null);
+        }}
+      />
     </ProfilePageLayout>
   );
 }

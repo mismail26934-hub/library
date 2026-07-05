@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { reviewsApi, type ReviewPayload } from "@/lib/api-endpoints";
+import { reviewsApi, type MyReviewsQuery, type ReviewPayload } from "@/lib/api-endpoints";
 import { getApiErrorMessage } from "@/lib/axios";
 import { qk } from "@/lib/query-keys";
 import type { BookDetail, Review } from "@/types";
@@ -13,10 +13,10 @@ export function useBookReviews(bookId: number | string) {
   });
 }
 
-export function useMyReviews() {
+export function useMyReviews(params: MyReviewsQuery) {
   return useQuery({
-    queryKey: qk.myReviews(),
-    queryFn: () => reviewsApi.mine(),
+    queryKey: qk.myReviews(params),
+    queryFn: () => reviewsApi.mine(params),
   });
 }
 
@@ -29,7 +29,7 @@ export function useAddReview(bookId: number) {
       toast.success("Review submitted");
       qc.invalidateQueries({ queryKey: qk.reviews(bookId) });
       qc.invalidateQueries({ queryKey: qk.book(bookId) });
-      qc.invalidateQueries({ queryKey: qk.myReviews() });
+      qc.invalidateQueries({ queryKey: ["my-reviews"] });
     },
     onError: (error) => toast.error(getApiErrorMessage(error, "Failed to submit review")),
   });
@@ -63,7 +63,7 @@ export function useDeleteReview(bookId: number) {
     onSettled: () => {
       qc.invalidateQueries({ queryKey: qk.reviews(bookId) });
       qc.invalidateQueries({ queryKey: qk.book(bookId) });
-      qc.invalidateQueries({ queryKey: qk.myReviews() });
+      qc.invalidateQueries({ queryKey: ["my-reviews"] });
     },
   });
 }

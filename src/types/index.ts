@@ -67,6 +67,12 @@ export interface Review {
   bookId: number;
   createdAt: string;
   user: { id: number; name: string };
+  book?: Book;
+}
+
+export interface MyReviewsResponse {
+  reviews: Review[];
+  pagination: Pagination;
 }
 
 export interface BookDetail extends Book {
