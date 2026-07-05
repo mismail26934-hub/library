@@ -83,7 +83,7 @@ function AuthorCard({ author, count }: { author: Author; count: number }) {
           {author.name}
         </p>
         <div className="flex items-center gap-1.5 text-base font-medium tracking-[-0.48px] text-[var(--color-ink)]">
-          <BookGlyph className="size-5 text-[var(--color-brand)]" />
+          <BookGlyph className="h-5 w-4 shrink-0" />
           {count} {count === 1 ? "book" : "books"}
         </div>
       </div>
@@ -93,14 +93,11 @@ function AuthorCard({ author, count }: { author: Author; count: number }) {
 
 function BookGlyph({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+    <svg viewBox="0 0 16 20" fill="none" className={className} aria-hidden="true">
       <path
-        d="M4 4.5A1.5 1.5 0 0 1 5.5 3H19a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a2 2 0 0 0-2 2V4.5Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
+        d="M2 20C1.45 20 0.979333 19.8043 0.588 19.413C0.196666 19.0217 0.000666667 18.5507 0 18V2C0 1.45 0.196 0.979333 0.588 0.588C0.98 0.196667 1.45067 0.000666667 2 0H14C14.55 0 15.021 0.196 15.413 0.588C15.805 0.98 16.0007 1.45067 16 2V18C16 18.55 15.8043 19.021 15.413 19.413C15.0217 19.805 14.5507 20.0007 14 20H2ZM7 9L9.5 7.5L12 9V2H7V9Z"
+        fill="#1C65DA"
       />
-      <path d="M4 18a2 2 0 0 1 2-2h14" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
     </svg>
   );
 }

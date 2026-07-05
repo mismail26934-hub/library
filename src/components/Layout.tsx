@@ -56,14 +56,14 @@ function Footer() {
   return (
     <footer className="border-t border-[var(--color-border)] bg-white px-5 py-16 md:py-20">
       <div className="mx-auto flex max-w-[1200px] flex-col items-center gap-10">
-        <div className="flex flex-col items-center gap-[22px]">
+        <div className="flex w-full flex-col items-center gap-[22px]">
           <div className="flex items-center gap-[15px]">
             <img src="/figma/logo.png" alt="Booky" className="size-[42px]" />
             <span className="text-[32px] font-bold tracking-tight text-[var(--color-ink)]">
               Booky
             </span>
           </div>
-          <p className="max-w-xl text-center text-base font-semibold tracking-[-0.32px] text-[var(--color-ink)]">
+          <p className="w-full self-stretch text-center text-[14px] font-semibold leading-[28px] tracking-[-0.28px] text-[var(--color-ink)] md:text-[16px] md:leading-[30px] md:tracking-[-0.32px]">
             Discover inspiring stories &amp; timeless knowledge, ready to borrow anytime.
             Explore online or visit our nearest library branch.
           </p>
