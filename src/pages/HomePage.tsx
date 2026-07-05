@@ -24,12 +24,12 @@ function CategoryCard({ name, icon, href }: { name: string; icon: string; href: 
   return (
     <Link
       to={href}
-      className="shadow-card flex flex-1 flex-col items-start justify-center gap-3 rounded-2xl bg-white p-3 transition-transform hover:-translate-y-0.5"
+      className="shadow-card flex flex-col items-start justify-center gap-2 rounded-2xl bg-white p-2 transition-transform hover:-translate-y-0.5 md:gap-3 md:p-3"
     >
-      <div className="flex w-full items-center justify-center rounded-xl bg-[var(--color-brand-soft)] p-2">
-        <img src={icon} alt="" className="size-[52px] object-contain" />
+      <div className="flex w-full items-center justify-center rounded-[10.5px] bg-[var(--color-brand-soft)] p-1.5 md:rounded-xl md:p-2">
+        <img src={icon} alt="" className="size-11 object-contain md:size-[52px]" />
       </div>
-      <p className="w-full text-base font-semibold tracking-[-0.32px] text-[var(--color-ink)]">
+      <p className="w-full text-xs font-semibold tracking-[-0.32px] text-[var(--color-ink)] md:text-base">
         {name}
       </p>
     </Link>
@@ -56,16 +56,16 @@ function BookyCard({ book }: { book: Book }) {
           </div>
         )}
       </div>
-      <div className="flex flex-col gap-1 p-4">
-        <p className="line-clamp-2 text-lg font-bold leading-8 tracking-[-0.54px] text-[var(--color-ink-strong)]">
+      <div className="flex flex-col gap-0.5 p-3 md:gap-1 md:p-4">
+        <p className="line-clamp-2 text-sm font-bold leading-7 tracking-[-0.28px] text-[var(--color-ink-strong)] md:text-lg md:leading-8 md:tracking-[-0.54px]">
           {book.title}
         </p>
-        <p className="line-clamp-1 text-base font-medium tracking-[-0.48px] text-[var(--color-ink-muted)]">
+        <p className="line-clamp-1 text-sm font-medium tracking-[-0.42px] text-[var(--color-ink-muted)] md:text-base md:tracking-[-0.48px]">
           {book.author?.name}
         </p>
         <div className="flex items-center gap-1 pt-0.5">
           <StarRating value={Math.round(book.rating)} size={20} />
-          <span className="text-base font-semibold tracking-[-0.32px] text-[var(--color-ink-strong)]">
+          <span className="text-sm font-semibold tracking-[-0.28px] text-[var(--color-ink-strong)] md:text-base md:tracking-[-0.32px]">
             {book.rating.toFixed(1)}
           </span>
         </div>
@@ -146,7 +146,7 @@ export function HomePage() {
   const initialLoading = isLoading && books.length === 0;
 
   return (
-    <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-12">
+    <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-8 md:gap-12">
       {/* Hero banner */}
       <section className="flex flex-col items-center gap-4">
         <img
@@ -168,20 +168,20 @@ export function HomePage() {
       </section>
 
       {/* Categories */}
-      <section className="flex flex-wrap items-stretch gap-4">
+      <section className="grid grid-cols-3 gap-3 md:grid-cols-6 md:gap-4">
         {CATEGORIES.map((c) => (
           <CategoryCard key={c.name} name={c.name} icon={c.icon} href={categoryHref(c.name)} />
         ))}
       </section>
 
       {/* Recommendation */}
-      <section className="flex flex-col items-center gap-10">
-        <h2 className="w-full text-4xl font-bold leading-[44px] text-[var(--color-ink)]">
+      <section className="flex flex-col items-center gap-5 md:gap-10">
+        <h2 className="w-full text-2xl font-bold leading-9 text-[var(--color-ink)] md:text-4xl md:leading-[44px]">
           Recommendation
         </h2>
 
         {initialLoading ? (
-          <div className="grid w-full grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="grid w-full grid-cols-2 gap-4 sm:grid-cols-3 md:gap-5 lg:grid-cols-5">
             {Array.from({ length: 10 }).map((_, i) => (
               <div key={i} className="space-y-3">
                 <Skeleton className="aspect-[230/345] w-full rounded-xl" />
@@ -194,7 +194,7 @@ export function HomePage() {
           <ErrorState onRetry={() => refetch()} />
         ) : (
           <>
-            <div className="grid w-full grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
+            <div className="grid w-full grid-cols-2 gap-4 sm:grid-cols-3 md:gap-5 lg:grid-cols-5">
               {books.map((book) => (
                 <BookyCard key={book.id} book={book} />
               ))}
@@ -205,7 +205,7 @@ export function HomePage() {
                 type="button"
                 onClick={() => setPage((p) => p + 1)}
                 disabled={isFetching}
-                className="flex h-12 w-[200px] items-center justify-center rounded-full border border-[var(--color-border)] p-2 text-base font-bold tracking-[-0.32px] text-[var(--color-ink)] transition-colors hover:bg-secondary disabled:opacity-60"
+                className="flex h-10 w-[150px] items-center justify-center rounded-full border border-[var(--color-border)] p-2 text-sm font-bold tracking-[-0.28px] text-[var(--color-ink)] transition-colors hover:bg-secondary disabled:opacity-60 md:h-12 md:w-[200px] md:text-base md:tracking-[-0.32px]"
               >
                 {isFetching ? "Loading…" : "Load More"}
               </button>
@@ -218,11 +218,11 @@ export function HomePage() {
       {popularAuthors.length > 0 && (
         <>
           <hr className="border-t border-[var(--color-border)]" />
-          <section className="flex flex-col gap-10">
-            <h2 className="text-4xl font-bold leading-[44px] text-[var(--color-ink)]">
+          <section className="flex flex-col gap-6 md:gap-10">
+            <h2 className="text-2xl font-bold leading-9 text-[var(--color-ink)] md:text-4xl md:leading-[44px]">
               Popular Authors
             </h2>
-            <div className="flex flex-wrap gap-5">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 md:gap-5">
               {popularAuthors.map(({ author, count }) => (
                 <AuthorCard key={author.id} author={author} count={count} />
               ))}

@@ -8,6 +8,7 @@ import { RegisterPage } from "@/pages/RegisterPage";
 import { BookListPage } from "@/pages/BookListPage";
 import { BookDetailPage } from "@/pages/BookDetailPage";
 import { MyLoansPage } from "@/pages/MyLoansPage";
+import { MyReviewsPage } from "@/pages/MyReviewsPage";
 import { ProfilePage } from "@/pages/ProfilePage";
 import { CartPage } from "@/pages/CartPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
@@ -42,6 +43,7 @@ export default function App() {
 
         <Route element={<ProtectedRoute />}>
           <Route path="/loans" element={<MyLoansPage />} />
+          <Route path="/reviews" element={<MyReviewsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
         </Route>
 

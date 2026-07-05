@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 const tabs = [
   { label: "Profile", to: "/profile" },
   { label: "Borrowed List", to: "/loans" },
-  { label: "Reviews", to: null },
+  { label: "Reviews", to: "/reviews" },
 ] as const;
 
 const base =
