@@ -64,9 +64,6 @@ export function useBorrow() {
       }
       toast.error(getApiErrorMessage(error, "Failed to borrow book"));
     },
-    onSuccess: () => {
-      toast.success("Book borrowed successfully");
-    },
     onSettled: (_data, _error, payload) => {
       qc.invalidateQueries({ queryKey: qk.book(payload.bookId) });
       qc.invalidateQueries({ queryKey: ["my-loans"] });

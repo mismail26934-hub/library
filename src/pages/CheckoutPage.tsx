@@ -109,9 +109,12 @@ export function CheckoutPage() {
         await borrow.mutateAsync({ bookId: book.id, days });
         await removeFromCart.mutateAsync(book.id);
       }
-      navigate("/loans", { replace: true });
+      navigate("/checkout/success", {
+        replace: true,
+        state: { returnDate: returnDate.toISOString() },
+      });
     } catch {
-      // useBorrow shows toast on error
+      // useBorrow shows toast on error; success page handles confirmation
     }
   };
 

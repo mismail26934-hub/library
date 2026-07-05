@@ -5,6 +5,15 @@ import { getApiErrorMessage } from "@/lib/axios";
 import { qk } from "@/lib/query-keys";
 import { useAppDispatch } from "@/app/hooks";
 import { setUser } from "@/features/auth/authSlice";
+import type { Profile, User } from "@/types";
+
+/** PATCH /me may return a flat User or the same nested Profile shape as GET /me. */
+function userFromMeResponse(data: User | Profile): User {
+  if ("profile" in data && data.profile) {
+    return data.profile;
+  }
+  return data as User;
+}
 
 export function useProfile(enabled = true) {
   return useQuery({
@@ -20,8 +29,8 @@ export function useUpdateProfile() {
 
   return useMutation({
     mutationFn: (payload: UpdateProfilePayload) => meApi.update(payload),
-    onSuccess: (user) => {
-      dispatch(setUser(user));
+    onSuccess: (data) => {
+      dispatch(setUser(userFromMeResponse(data)));
       toast.success("Profile updated");
       qc.invalidateQueries({ queryKey: qk.profile() });
     },

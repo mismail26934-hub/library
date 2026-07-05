@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import { Layout } from "@/components/Layout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { CartSync } from "@/features/cart/useCart";
@@ -13,6 +14,7 @@ import { MyReviewsPage } from "@/pages/MyReviewsPage";
 import { ProfilePage } from "@/pages/ProfilePage";
 import { CartPage } from "@/pages/CartPage";
 import { CheckoutPage } from "@/pages/CheckoutPage";
+import { BorrowSuccessPage } from "@/pages/BorrowSuccessPage";
 import { AuthorPage } from "@/pages/AuthorPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { AdminUsersPage } from "@/pages/admin/AdminUsersPage";
@@ -25,6 +27,7 @@ export default function App() {
   return (
     <>
       <CartSync />
+      <ScrollToTop />
       <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
@@ -51,6 +54,7 @@ export default function App() {
 
         <Route element={<ProtectedRoute />}>
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/checkout/success" element={<BorrowSuccessPage />} />
           <Route path="/loans" element={<MyLoansPage />} />
           <Route path="/reviews" element={<MyReviewsPage />} />
           <Route path="/profile" element={<ProfilePage />} />

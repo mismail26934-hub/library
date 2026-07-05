@@ -1,9 +1,11 @@
+import { useLayoutEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Star } from "lucide-react";
 import { useBook } from "@/features/books/useBooks";
 import { useIsBookBorrowed } from "@/features/loans/useLoans";
 import { useAppSelector } from "@/app/hooks";
 import { useAddToCart } from "@/features/cart/useCart";
+import { scrollToTop } from "@/lib/utils";
 import {
   BookDetailBreadcrumbs,
   BookDetailStat,
@@ -25,6 +27,16 @@ export function BookDetailPage() {
   const inCart = useAppSelector((s) => s.cart.items.some((i) => i.book.id === bookId));
   const addToCart = useAddToCart();
   const { isBorrowed } = useIsBookBorrowed(bookId);
+
+  useLayoutEffect(() => {
+    scrollToTop();
+  }, [bookId]);
+
+  useLayoutEffect(() => {
+    if (!isLoading && book) {
+      scrollToTop();
+    }
+  }, [bookId, isLoading, book]);
 
   if (isLoading) return <LoadingSpinner label="Loading book..." />;
   if (isError || !book) return <ErrorState onRetry={() => refetch()} />;

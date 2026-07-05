@@ -137,13 +137,13 @@ export const reviewsApi = {
 export interface UpdateProfilePayload {
   name?: string;
   phone?: string;
-  profilePhoto?: string;
+  profilePhoto?: string | null;
 }
 
 export const meApi = {
   get: () => api.get<ApiResponse<Profile>>("/me").then((r) => r.data.data),
   update: (payload: UpdateProfilePayload) =>
-    api.patch<ApiResponse<User>>("/me", payload).then((r) => r.data.data),
+    api.patch<ApiResponse<User | Profile>>("/me", payload).then((r) => r.data.data),
 };
 
 /* -------------------------------- Admin ------------------------------- */

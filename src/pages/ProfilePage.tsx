@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useProfile, useUpdateProfile } from "@/features/profile/useProfile";
 import { ProfilePageLayout } from "@/components/ProfilePageLayout";
+import { ProfilePhotoUpload } from "@/components/profile/ProfilePhotoUpload";
 import { Avatar } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +21,7 @@ import { getInitials } from "@/lib/utils";
 const schema = z.object({
   name: z.string().min(2, "Name is required"),
   phone: z.string().optional(),
-  profilePhoto: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+  profilePhoto: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -34,6 +35,7 @@ export function ProfilePage() {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
@@ -57,7 +59,7 @@ export function ProfilePage() {
       {
         name: v.name,
         phone: v.phone || undefined,
-        profilePhoto: v.profilePhoto || undefined,
+        profilePhoto: v.profilePhoto?.trim() ? v.profilePhoto : null,
       },
       { onSuccess: () => setEditOpen(false) },
     ),
@@ -110,17 +112,17 @@ export function ProfilePage() {
               <Input id="phone" placeholder="+62..." {...register("phone")} />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="profilePhoto">Profile photo URL</Label>
-              <Input
-                id="profilePhoto"
-                placeholder="https://..."
-                {...register("profilePhoto")}
+              <Controller
+                name="profilePhoto"
+                control={control}
+                render={({ field }) => (
+                  <ProfilePhotoUpload
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={errors.profilePhoto?.message}
+                  />
+                )}
               />
-              {errors.profilePhoto && (
-                <p className="text-xs text-destructive">
-                  {errors.profilePhoto.message}
-                </p>
-              )}
             </div>
             <Button
               type="submit"

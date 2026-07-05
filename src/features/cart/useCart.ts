@@ -55,9 +55,9 @@ export function useRemoveFromCart() {
   const items = useAppSelector((s) => s.cart.items);
 
   return useMutation({
-    mutationFn: (bookId: number) => {
+    mutationFn: async (bookId: number) => {
       const item = items.find((i) => i.book.id === bookId);
-      if (!item) throw new Error("Item not in cart");
+      if (!item) return;
       return cartApi.removeItem(item.id);
     },
     onSuccess: () => {
