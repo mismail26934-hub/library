@@ -1,13 +1,14 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import {
-  adminApi,
-  authorsApi,
-  type AdminListQuery,
-} from "@/lib/api-endpoints";
-import { getApiErrorMessage } from "@/lib/axios";
-import { qk } from "@/lib/query-keys";
-import type { BookPayload } from "@/types";
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { adminApi, authorsApi, type AdminListQuery } from '@/lib/api-endpoints';
+import { getApiErrorMessage } from '@/lib/axios';
+import { qk } from '@/lib/query-keys';
+import type { BookPayload } from '@/types';
 
 export function useAdminUsers(params: AdminListQuery) {
   return useQuery({
@@ -38,10 +39,10 @@ export function useCreateBook() {
   return useMutation({
     mutationFn: (payload: BookPayload) => adminApi.createBook(payload),
     onSuccess: () => {
-      toast.success("Book added successfully");
-      qc.invalidateQueries({ queryKey: ["books"] });
+      qc.invalidateQueries({ queryKey: ['books'] });
     },
-    onError: (error) => toast.error(getApiErrorMessage(error, "Failed to add book")),
+    onError: (error) =>
+      toast.error(getApiErrorMessage(error, 'Failed to add book')),
   });
 }
 
@@ -51,11 +52,11 @@ export function useUpdateBook() {
     mutationFn: ({ id, payload }: { id: number; payload: BookPayload }) =>
       adminApi.updateBook(id, payload),
     onSuccess: (_data, { id }) => {
-      toast.success("Book updated successfully");
-      qc.invalidateQueries({ queryKey: ["books"] });
+      qc.invalidateQueries({ queryKey: ['books'] });
       qc.invalidateQueries({ queryKey: qk.book(id) });
     },
-    onError: (error) => toast.error(getApiErrorMessage(error, "Failed to update book")),
+    onError: (error) =>
+      toast.error(getApiErrorMessage(error, 'Failed to update book')),
   });
 }
 
@@ -64,9 +65,9 @@ export function useDeleteBook() {
   return useMutation({
     mutationFn: (id: number) => adminApi.deleteBook(id),
     onSuccess: () => {
-      toast.success("Book deleted");
-      qc.invalidateQueries({ queryKey: ["books"] });
+      qc.invalidateQueries({ queryKey: ['books'] });
     },
-    onError: (error) => toast.error(getApiErrorMessage(error, "Failed to delete book")),
+    onError: (error) =>
+      toast.error(getApiErrorMessage(error, 'Failed to delete book')),
   });
 }

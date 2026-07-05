@@ -84,7 +84,7 @@ function AdminHeader() {
 
 export function AdminLayout() {
   const { pathname } = useLocation();
-  const hideTabs = /\/admin\/books\/\d+\/preview$/.test(pathname);
+  const hideTabs = /\/admin\/books\/(?:new|\d+\/(?:edit|preview))$/.test(pathname);
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
