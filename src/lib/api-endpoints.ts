@@ -81,6 +81,7 @@ export interface BorrowPayload {
 }
 export interface MyLoansQuery {
   status?: "all" | "active" | "returned" | "overdue";
+  q?: string;
   page?: number;
   limit?: number;
 }

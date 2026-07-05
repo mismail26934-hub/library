@@ -15,6 +15,15 @@ export function formatDate(date: string | Date | null | undefined): string {
   }
 }
 
+export function formatDueDate(date: string | Date | null | undefined): string {
+  if (!date) return "-";
+  try {
+    return format(new Date(date), "dd MMMM yyyy");
+  } catch {
+    return "-";
+  }
+}
+
 export function formatDateTime(date: string | Date | null | undefined): string {
   if (!date) return "-";
   try {
