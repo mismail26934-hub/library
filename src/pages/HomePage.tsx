@@ -238,15 +238,13 @@ export function HomePage() {
           alt='Welcome to Booky'
           className='w-full rounded-3xl'
         />
-        <div className='flex items-center gap-2'>
+        <div className='flex h-2.5 items-center gap-1.5'>
           {[0, 1, 2].map((i) => (
             <span
               key={i}
               className={cn(
-                'h-2.5 rounded-full transition-all',
-                i === 0
-                  ? 'w-6 bg-[var(--color-brand)]'
-                  : 'w-2.5 bg-[var(--color-brand-soft)]'
+                'size-2.5 shrink-0 rounded-full transition-colors',
+                i === 0 ? 'bg-[#1C65DA]' : 'bg-[#D5D7DA]',
               )}
             />
           ))}

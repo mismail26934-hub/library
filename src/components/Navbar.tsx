@@ -53,12 +53,7 @@ export function Navbar() {
         {/* Logo */}
         <Link to="/" className="flex shrink-0 items-center gap-[15px]">
           <img src="/figma/logo.png" alt="Booky" className="size-[42px]" />
-          <span
-            className={cn(
-              "text-[26px] font-bold tracking-tight text-[var(--color-ink)] md:text-[32px]",
-              (searchOpen || mobileOpen) && "hidden md:inline",
-            )}
-          >
+          <span className="hidden text-[26px] font-bold tracking-tight text-[var(--color-ink)] md:inline md:text-[32px]">
             Booky
           </span>
         </Link>
