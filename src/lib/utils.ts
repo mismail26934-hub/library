@@ -24,6 +24,15 @@ export function formatDateTime(date: string | Date | null | undefined): string {
   }
 }
 
+export function formatReviewDate(date: string | Date | null | undefined): string {
+  if (!date) return "-";
+  try {
+    return format(new Date(date), "dd MMMM yyyy, HH:mm");
+  } catch {
+    return "-";
+  }
+}
+
 export function fromNow(date: string | Date | null | undefined): string {
   if (!date) return "-";
   try {

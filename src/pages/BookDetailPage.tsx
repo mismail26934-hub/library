@@ -1,14 +1,17 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, BookOpen, Calendar, Layers, ShoppingCart } from "lucide-react";
+import { useParams } from "react-router-dom";
+import { Star } from "lucide-react";
 import { useBook } from "@/features/books/useBooks";
 import { useBorrow } from "@/features/loans/useLoans";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { addToCart } from "@/features/cart/cartSlice";
-import { StarRating } from "@/components/StarRating";
+import {
+  BookDetailBreadcrumbs,
+  BookDetailStat,
+  StatDivider,
+} from "@/components/BookDetailBreadcrumbs";
+import { RelatedBooksSection } from "@/components/RelatedBooksSection";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
@@ -60,112 +63,114 @@ export function BookDetailPage() {
     );
   };
 
-  return (
-    <div className="space-y-8">
-      <Link
-        to="/books"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+  const handleAddToCart = () => {
+    dispatch(addToCart(book));
+    toast.success("Added to cart");
+  };
+
+  const actionButtons = (
+    <div className="flex flex-wrap gap-3">
+      <Button
+        variant="outline"
+        className="h-12 w-[200px] rounded-full border-[#d5d7da] text-base font-bold tracking-[-0.32px]"
+        disabled={outOfStock || inCart}
+        onClick={handleAddToCart}
       >
-        <ArrowLeft className="h-4 w-4" /> Back to books
-      </Link>
+        {inCart ? "In Cart" : "Add to Cart"}
+      </Button>
+      <Button
+        className="h-12 w-[200px] rounded-full bg-[#1C65DA] text-base font-bold tracking-[-0.32px] hover:bg-[#1C65DA]/90"
+        onClick={handleBorrow}
+        disabled={outOfStock}
+        loading={borrow.isPending}
+      >
+        {outOfStock ? "Out of Stock" : "Borrow Book"}
+      </Button>
+    </div>
+  );
 
-      <div className="grid gap-8 md:grid-cols-[300px_1fr]">
-        <div className="space-y-4">
-          <div className="overflow-hidden rounded-[var(--radius)] border bg-muted">
-            {book.coverImage ? (
-              <img
-                src={book.coverImage}
-                alt={book.title}
-                className="aspect-[3/4] w-full object-cover"
-              />
-            ) : (
-              <div className="flex aspect-[3/4] items-center justify-center text-muted-foreground">
-                No cover
-              </div>
-            )}
-          </div>
+  return (
+    <>
+    <div className="flex flex-col gap-6 pb-[72px] lg:gap-16 lg:pb-0">
+      <BookDetailBreadcrumbs
+        categoryName={book.category?.name}
+        categoryId={book.categoryId}
+        bookTitle={book.title}
+      />
 
-          <div className="flex flex-col gap-2">
-            <Button
-              className="w-full"
-              onClick={handleBorrow}
-              disabled={outOfStock}
-              loading={borrow.isPending}
-            >
-              <BookOpen className="h-4 w-4" />
-              {outOfStock ? "Out of stock" : "Borrow this book"}
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full"
-              disabled={outOfStock || inCart}
-              onClick={() => {
-                dispatch(addToCart(book));
-                toast.success("Added to cart");
-              }}
-            >
-              <ShoppingCart className="h-4 w-4" />
-              {inCart ? "In cart" : "Add to cart"}
-            </Button>
-          </div>
+      <div className="flex flex-col items-center gap-9 lg:flex-row lg:items-start">
+        <div className="mx-auto shrink-0 bg-[#e9eaeb] p-[5px] lg:mx-0 lg:w-full lg:max-w-[321px] lg:p-2">
+          {book.coverImage ? (
+            <img
+              src={book.coverImage}
+              alt={book.title}
+              className="h-[318px] w-[212px] object-cover lg:h-[482px] lg:w-full"
+            />
+          ) : (
+            <div className="flex h-[318px] w-[212px] items-center justify-center text-muted-foreground lg:h-[482px] lg:w-full">
+              No cover
+            </div>
+          )}
         </div>
 
-        <div className="space-y-5">
-          <div className="space-y-2">
-            <Badge variant="secondary">{book.category?.name}</Badge>
-            <h1 className="text-3xl font-bold leading-tight">{book.title}</h1>
-            <p className="text-lg text-muted-foreground">by {book.author?.name}</p>
-            <div className="flex items-center gap-2">
-              <StarRating value={Math.round(book.rating)} size={18} />
-              <span className="text-sm font-medium">{book.rating.toFixed(1)}</span>
-              <span className="text-sm text-muted-foreground">
-                ({book.reviewCount} reviews)
-              </span>
+        <div className="flex w-full min-w-0 flex-1 flex-col gap-4 lg:gap-5">
+          <div className="flex flex-col gap-3 lg:gap-[22px]">
+            <div className="flex flex-col gap-0.5 lg:gap-1">
+              {book.category?.name && (
+                <span className="inline-flex w-fit items-center rounded-md border border-[#d5d7da] px-2 py-0 text-sm font-bold leading-7 tracking-[-0.28px] text-[var(--color-ink)]">
+                  {book.category.name}
+                </span>
+              )}
+              <h1 className="text-2xl font-bold leading-9 tracking-[-0.56px] text-[var(--color-ink)] lg:text-[28px] lg:leading-[38px]">
+                {book.title}
+              </h1>
+              <p className="text-sm font-semibold tracking-[-0.28px] text-[var(--color-ink-muted)] lg:text-base lg:tracking-[-0.32px]">
+                {book.author?.name}
+              </p>
+              <div className="flex items-center gap-0.5">
+                <Star className="size-6 fill-[var(--color-star)] text-[var(--color-star)]" />
+                <span className="text-base font-bold tracking-[-0.32px] text-[var(--color-ink-strong)]">
+                  {book.rating.toFixed(1)}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex w-full items-center gap-5">
+              <BookDetailStat value={book.totalCopies} label="Stock" />
+              <StatDivider />
+              <BookDetailStat value={book.borrowCount} label="Rating" />
+              <StatDivider />
+              <BookDetailStat value={book.reviewCount} label="Reviews" />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            <Card>
-              <CardContent className="flex items-center gap-3 p-4">
-                <Layers className="h-5 w-5 text-primary" />
-                <div>
-                  <p className="text-xs text-muted-foreground">Available</p>
-                  <p className="font-semibold">
-                    {book.availableCopies} / {book.totalCopies}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="flex items-center gap-3 p-4">
-                <Calendar className="h-5 w-5 text-primary" />
-                <div>
-                  <p className="text-xs text-muted-foreground">Published</p>
-                  <p className="font-semibold">{book.publishedYear}</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="flex items-center gap-3 p-4">
-                <BookOpen className="h-5 w-5 text-primary" />
-                <div>
-                  <p className="text-xs text-muted-foreground">Borrowed</p>
-                  <p className="font-semibold">{book.borrowCount}x</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <hr className="border-[#d5d7da]" />
 
-          <div>
-            <h2 className="mb-2 text-lg font-semibold">Description</h2>
-            <p className="whitespace-pre-line leading-relaxed text-muted-foreground">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-xl font-bold leading-[34px] tracking-[-0.4px] text-[var(--color-ink)]">
+              Description
+            </h2>
+            <p className="whitespace-pre-line text-sm font-medium leading-7 tracking-[-0.42px] text-[var(--color-ink)] lg:text-base lg:leading-[30px] lg:tracking-[-0.48px]">
               {book.description}
             </p>
           </div>
+
+          <div className="hidden lg:block">{actionButtons}</div>
         </div>
       </div>
 
-      <ReviewSection bookId={book.id} reviews={book.reviews} />
+      <hr className="border-[#d5d7da]" />
+
+      <ReviewSection
+        bookId={book.id}
+        reviews={book.reviews}
+        rating={book.rating}
+        reviewCount={book.reviewCount}
+      />
+
+      <hr className="border-[#d5d7da]" />
+
+      <RelatedBooksSection bookId={book.id} categoryId={book.categoryId} />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent onClose={() => setDialogOpen(false)}>
@@ -192,14 +197,34 @@ export function BookDetailPage() {
         </DialogContent>
       </Dialog>
     </div>
+
+    <div className="shadow-card fixed inset-x-0 bottom-0 z-40 flex gap-3 bg-white p-4 lg:hidden">
+      <Button
+        variant="outline"
+        className="h-10 min-w-0 flex-1 rounded-full border-[#d5d7da] text-sm font-bold tracking-[-0.28px]"
+        disabled={outOfStock || inCart}
+        onClick={handleAddToCart}
+      >
+        {inCart ? "In Cart" : "Add to Cart"}
+      </Button>
+      <Button
+        className="h-10 min-w-0 flex-1 rounded-full bg-[#1C65DA] text-sm font-bold tracking-[-0.28px] hover:bg-[#1C65DA]/90"
+        onClick={handleBorrow}
+        disabled={outOfStock}
+        loading={borrow.isPending}
+      >
+        {outOfStock ? "Out of Stock" : "Borrow Book"}
+      </Button>
+    </div>
+    </>
   );
 }
 
 export function BookDetailSkeleton() {
   return (
-    <div className="grid gap-8 md:grid-cols-[300px_1fr]">
-      <Skeleton className="aspect-[3/4] w-full" />
-      <div className="space-y-4">
+    <div className="flex flex-col gap-8 lg:flex-row lg:gap-9">
+      <Skeleton className="mx-auto h-[318px] w-[212px] lg:mx-0 lg:h-[482px] lg:w-full lg:max-w-[321px]" />
+      <div className="flex-1 space-y-4">
         <Skeleton className="h-8 w-2/3" />
         <Skeleton className="h-4 w-1/3" />
         <Skeleton className="h-24 w-full" />
