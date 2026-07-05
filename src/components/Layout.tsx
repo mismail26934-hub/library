@@ -46,10 +46,30 @@ function TikTok({ className }: { className?: string }) {
 }
 
 const socials = [
-  { label: "Facebook", Icon: Facebook, href: "#", size: "size-10" },
-  { label: "Instagram", Icon: Instagram, href: "#", size: "size-10" },
-  { label: "LinkedIn", Icon: Linkedin, href: "#", size: "size-10" },
-  { label: "TikTok", Icon: TikTok, href: "#", size: "size-10" },
+  {
+    label: "Facebook",
+    Icon: Facebook,
+    href: import.meta.env.VITE_SOCIAL_FACEBOOK ?? "https://www.facebook.com",
+    size: "size-10",
+  },
+  {
+    label: "Instagram",
+    Icon: Instagram,
+    href: import.meta.env.VITE_SOCIAL_INSTAGRAM ?? "https://www.instagram.com",
+    size: "size-10",
+  },
+  {
+    label: "LinkedIn",
+    Icon: Linkedin,
+    href: import.meta.env.VITE_SOCIAL_LINKEDIN ?? "https://www.linkedin.com",
+    size: "size-10",
+  },
+  {
+    label: "TikTok",
+    Icon: TikTok,
+    href: import.meta.env.VITE_SOCIAL_TIKTOK ?? "https://www.tiktok.com",
+    size: "size-10",
+  },
 ];
 
 function Footer() {
@@ -76,6 +96,8 @@ function Footer() {
               <a
                 key={label}
                 href={href}
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={label}
                 className="flex size-10 items-center justify-center rounded-full border border-[var(--color-border)] text-[var(--color-ink)] transition-colors hover:bg-secondary"
               >
