@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useMyReviews } from "@/features/reviews/useReviews";
-import { ProfileTabs } from "@/components/ProfileTabs";
+import { ProfilePageLayout } from "@/components/ProfilePageLayout";
 import { StarRating } from "@/components/StarRating";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner, ErrorState, EmptyState } from "@/components/states";
@@ -11,9 +11,7 @@ export function MyReviewsPage() {
   const reviews = data?.reviews ?? [];
 
   return (
-    <div className="mx-auto flex w-full max-w-[560px] flex-col gap-4 md:gap-6">
-      <ProfileTabs />
-
+    <ProfilePageLayout>
       <div className="flex flex-col gap-4 md:gap-6">
         <h1 className="text-2xl font-bold tracking-[-0.72px] text-[var(--color-ink)] md:text-[28px] md:tracking-[-0.84px]">
           Reviews
@@ -60,6 +58,6 @@ export function MyReviewsPage() {
           </div>
         )}
       </div>
-    </div>
+    </ProfilePageLayout>
   );
 }

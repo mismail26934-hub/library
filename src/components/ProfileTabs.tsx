@@ -15,7 +15,7 @@ const inactive = "font-medium text-[var(--color-ink-subtle)]";
 
 export function ProfileTabs() {
   return (
-    <div className="flex h-14 w-full items-center gap-2 rounded-2xl bg-[#f5f5f5] p-2">
+    <div className="flex h-14 w-full items-center gap-2 rounded-2xl bg-[#f5f5f5] p-2 lg:w-[557px]">
       {tabs.map((tab) => (
         <NavLink
           key={tab.label}

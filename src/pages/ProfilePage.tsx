@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useProfile, useUpdateProfile } from "@/features/profile/useProfile";
-import { ProfileTabs } from "@/components/ProfileTabs";
+import { ProfilePageLayout } from "@/components/ProfilePageLayout";
 import { Avatar } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,9 +64,7 @@ export function ProfilePage() {
   );
 
   return (
-    <div className="mx-auto flex w-full max-w-[560px] flex-col gap-4 md:gap-6">
-      <ProfileTabs />
-
+    <ProfilePageLayout>
       <div className="flex flex-col gap-4 md:gap-6">
         <h1 className="text-2xl font-bold tracking-[-0.72px] text-[var(--color-ink)] md:text-[28px] md:tracking-[-0.84px]">
           Profile
@@ -134,7 +132,7 @@ export function ProfilePage() {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </ProfilePageLayout>
   );
 }
 
